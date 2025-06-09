@@ -1,0 +1,64 @@
+@use '@angular/material' as mat;
+
+@include mat.icon-button-overrides(
+    (
+      icon-color: var(--mat-sys-surface),
+    )
+  );
+
+  .mat-drawer-container{
+    height: 91%;
+      @include mat.sidenav-overrides((
+          container-width: 250px,
+          container-background-color: var(--mat-sys-surface-container-highest),
+          container-text-color: var(--mat-sys-tertiary),
+      ));
+  }
+
+  .mat-list-group {
+    @include mat.list-overrides((
+        list-item-selected-container-color: var(--mat-sys-primary),
+  ));
+  }
+.mat-list-item {
+    @include mat.list-overrides((
+      active-indicator-color: orange,
+    ));
+}
+ 
+ .sidenav {
+    height: 100%;
+    width: 250px;
+  transition: width 0.3s;
+  overflow-y: auto; /* Habilita el desplazamiento vertical */
+  }
+
+  .nav-text {
+    margin-left: 16px;
+    transition: opacity 0.3s, width 0.3s;
+  }
+
+  .sidenav.collapsed {
+    width: 70px;
+  }
+
+  .mat-list-item:hover {
+    font-weight: bold;
+  }
+
+  .sidenav.collapsed .nav-text {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+  }
+
+  .active {
+    font-weight: bold;
+    color: white;
+
+    @include mat.list-overrides((
+      list-item-label-text-color: white,
+        list-item-container-color: #314f9b,
+        list-item-leading-icon-color: white,
+    ));
+  }

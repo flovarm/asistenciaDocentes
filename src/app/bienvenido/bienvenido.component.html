@@ -1,0 +1,62 @@
+<mat-card class="mt-1 mb-1" appearance="outlined">
+    <div class="col-lg-8 mx-auto p-4 py-md-5">
+        <header class="d-flex align-items-center justify-content-center pb-3 mb-5 border-bottom">
+          <a href="/" class="d-flex align-items-center text-body-emphasis text-decoration-none">
+            <img src="/images/la.png" alt="" loading="lazy" [width]="130" priority>
+          </a>
+        </header>
+        <h1 class="text-body-emphasis ml-4">Bienvenido</h1>
+      
+        <main>
+          <p class="fs-5 col-md-8"></p>
+      
+          <div class="mb-5">
+          <h3>{{usuarioLogeado?.nombreCompleto | titlecase}}</h3>
+          </div>
+      
+          <hr class="col-3 col-md-2 mb-5">
+      
+          <div class="row g-5">
+            <div class="col-md-6">
+              <h2 class="text-body-emphasis">Mis Datos Personales</h2>
+              <p></p>
+              <ul class="list-unstyled ps-0">
+                <li>
+                    <div class="row">
+                        <div class="col-4">
+                            <strong>DNI:</strong>
+                        </div>
+                        <div class="col-8">
+                            {{usuarioLogeado?.userName}}
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="row">
+                        <div class="col-4">
+                            <strong>Telefono:</strong>
+                        </div>
+                        <div class="col-8">
+                            {{usuarioLogeado?.celular}}
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="row">
+                        <div class="col-4">
+                            <strong>Correo:</strong>
+                        </div>
+                        <div class="col-8">
+                            {{usuarioLogeado?.email}}
+                        </div>
+                    </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </main>
+        <footer class="pt-5 my-5 text-body-secondary border-top">
+          Created by El Cultural · © 2025
+        </footer>
+      </div>
+    </mat-card>

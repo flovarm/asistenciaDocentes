@@ -1,0 +1,145 @@
+.login-container {
+    display: grid;
+    place-items: center;
+    min-height: 100dvh;
+    background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  }
+  
+  .login-form {
+    background: #ffffff;
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 440px;
+    border: 1px solid #e0e0e0;
+  }
+  
+  .title {
+    color: #314f9b;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+
+  }
+  
+  .form-group {
+    margin-bottom: 1.75rem;
+  }
+  
+  .label {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+  }
+  
+
+   .logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+  .input {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+  }
+  
+  .input:focus {
+    outline: none;
+    border-color: #314f9b;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  }
+  
+  .submit-button {
+    width: 100%;
+    padding: 1rem;
+    background: #314f9b;
+    color: white;
+    background: #2a2a2a; /* Fallback color */
+    border: none;
+    border-radius: 0.75rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: 
+      background-color 0.3s ease,
+      transform 0.1s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .fondo-imagen {
+    background-image: url('/images/fondologin02.png'),
+  }
+  
+  .submit-button:hover {
+    background: #0056b3;
+  }
+  
+  .submit-button:active {
+    transform: scale(0.98);
+  }
+  
+  .submit-button:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+  }
+
+  .login-btn {
+    position: relative;
+    background: transparent;
+    padding: 15px 45px;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1.1rem;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    cursor: pointer;
+    transition: 0.5s;
+  }
+  
+  .login-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #314f9b;
+    border-radius: 8px;
+    z-index: -1;
+  }
+  
+  .login-btn:hover {
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  }
+  
+  .error-message {
+    color: #e02b20;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .flotante {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2
+  }

@@ -1,0 +1,23 @@
+<app-navbar (toggleSidenav)="abrirSidenav(drawer)"></app-navbar>
+<mat-sidenav-container class="mat-drawer-container" autosize apparence="outlined">
+  <mat-sidenav #drawer class="sidenav mt-1 mb-1" [mode]="isMobile() ? 'over' : 'side'" [(opened)]="opened"
+  [fixedInViewport]="isMobile()" fixedTopGap="56" [class.collapsed]="!opened">
+  @for(ruta of menuItems; track ruta) {
+    <mat-nav-list>      
+        
+        <a mat-list-item class="mat-list-item mb-1" [routerLink]="'./' + ruta.path " routerLinkActive="active">
+          <mat-icon matListItemIcon>{{ruta.data['icon'] }}</mat-icon>
+          {{ruta.title}}
+        </a>                
+    </mat-nav-list>
+    
+  }
+  
+</mat-sidenav>
+<mat-sidenav-content>
+  <div class="container-fluid">
+        <router-outlet></router-outlet>
+      </div>
+    </mat-sidenav-content>
+  
+  </mat-sidenav-container>

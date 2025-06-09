@@ -1,0 +1,59 @@
+<mat-toolbar class="d-flex justify-content-between">
+    <div>
+        <img src="/images/LogoECV001.png"  loading="lazy" [width]="100" 
+        priority >
+        <img src="/images/LogoBlancoLetras.png" alt="" loading="lazy" [width]="130" priority>
+        <button mat-icon-button class="example-icon" (click)="onToggleSidenav()" aria-label="Example icon-button with menu icon">
+          <mat-icon>menu</mat-icon>
+        </button>
+    </div>
+    <div>
+     
+      <button mat-raised-button [matMenuTriggerFor]="menu">
+        <span>{{ authService.currentUser()?.nombreCompleto| initials }}</span>
+        </button>
+        <mat-menu #menu="matMenu">
+          <div class="container">
+            <div class="row">
+              <div class="col-12">
+                <button mat-menu-item [routerLink]="'/'">
+                  <mat-icon fontIcon="person"></mat-icon>Perfil
+                </button>
+              </div>
+            </div>
+            <button mat-menu-item class="mt-1" [mat-menu-trigger-for]="themeMenu">
+                <mat-icon>{{ themeService.selectedTheme()?.icon }}</mat-icon> <span>Tema</span>
+              </button>
+            <div class="row">
+              <div class="col-12">
+                <button mat-menu-item (click)=authService.logout()>
+                  <mat-icon fontIcon="logout"></mat-icon>Cerrar Sesión
+                </button>
+              </div>
+
+            </div>
+          </div>
+        
+          </mat-menu>
+          <mat-menu #themeMenu="matMenu">
+              @for (theme of themeService.getThemes(); track theme.name) {
+              <button 
+                [class.selected-theme]="
+                  themeService.selectedTheme()?.name === theme.name
+                "
+                mat-menu-item
+                (click)="themeService.setTheme(theme.name)"
+              >
+                <mat-icon>{{ theme.icon }}</mat-icon>
+                <span>{{ theme.name | titlecase }}</span>
+              </button>
+              }
+            </mat-menu>
+    
+    </div>
+  </mat-toolbar>
+  @if (loading.loading$ | async ) {
+    <mat-progress-bar mode="indeterminate" class="flotante"></mat-progress-bar>
+
+}
+

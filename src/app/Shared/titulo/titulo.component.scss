@@ -1,0 +1,21 @@
+@use '@angular/material' as mat;
+.titulo {
+  // background: linear-gradient(
+  //       45deg,
+  //       #314f9b,  /* Color primario con transparencia */
+  //       #e02b20 /* Color acento con transparencia */
+  //     );
+  //     backdrop-filter: blur(8px);
+  //     -webkit-backdrop-filter: blur(8px);
+    @include mat.toolbar-overrides((
+        container-text-color: var(--mat-sys-outline),
+        //  container-background-color: #314f9b
+      ));
+
+}
+
+.btn-titulo {
+    @include mat.icon-overrides((
+        color: var(--mat-sys-outline),
+      ));
+}

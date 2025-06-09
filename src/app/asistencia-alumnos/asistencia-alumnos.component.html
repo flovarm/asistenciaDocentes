@@ -1,0 +1,110 @@
+<app-titulo title="Asistencia Alumnos" icon="edit_note"></app-titulo>
+
+<mat-card class="p-3">
+    <mat-card-subtitle>Obtener Asistencias</mat-card-subtitle>
+    <form>
+        <div class="row">
+            <div class="col-12 col-md-4">
+                <mat-form-field>
+                    <mat-label>Seleccione un turno</mat-label>
+                    <mat-select name="turno" [(value)]="turno" (selectionChange)="obtenerCurso()">
+                        @for (turno of turnos; track $index) {
+                        <mat-option [value]="turno">{{turno.nombre}} </mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-md-4">
+                <mat-form-field>
+                    <mat-label>Curso asociado</mat-label>
+                    <mat-select [(value)]="curso">
+                        @if(curso) {
+                        <mat-option [value]="curso">{{ curso }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+    </form>
+</mat-card>
+
+<mat-card class="p-3 mt-2 mb-2">
+    <div class="row d-flex justify-content-between">
+        <div class="col-12 col-md-4">
+            <mat-form-field>
+                <mat-label>Buscar</mat-label>
+                <input matInput (keyup)="applyFilter($event)" placeholder="búsqueda de un alumno" #input>
+            </mat-form-field>
+        </div>
+    </div>
+    <div>
+        <div class="row">
+            <div class="col-12" style="overflow-x: auto;">
+                <table mat-table [dataSource]="dataSource" class="table-EC" matSort>
+
+                     <!-- Columna de numeración -->
+                    <ng-container matColumnDef="index">
+                        <th mat-header-cell *matHeaderCellDef>#</th>
+                        <td mat-cell *matCellDef="let row; let i = index">{{ i + 1 }}</td>
+                    </ng-container>
+                    <!-- Columnas dinámicas -->
+                    @for (column of displayedColumns; track $index) {
+                    <ng-container [matColumnDef]="column" [sticky]="column === 'alumno'">
+                        <th mat-header-cell *matHeaderCellDef [class.alumno-col]="column === 'alumno'">
+                            @if (isDateColumn(column)) {
+                            @if (column === getTodayString()) {
+                            <button mat-raised-button color="primary" (click)="guardarAsistencia()"
+                                style="margin-left:8px;">
+                                <mat-icon>save</mat-icon>
+                                 {{ column | date:'MM/dd' }}
+                            </button>
+                            } @else {
+                            {{ column | date:'MM/dd' }}
+                            }
+                            } @else if (column === 'alumno') {
+                            <!-- Puedes poner aquí el título de la columna alumno si lo deseas -->
+                            } @else {
+                            {{ column | titlecase }}
+                            }
+                        </th>
+                        <td mat-cell *matCellDef="let row" [class.alumno-col]="column === 'alumno'">
+                            @if (column !== 'alumno' && column !== 'idAlumno') {
+                            @if (column === getTodayString()) {
+                            <select class="form-select form-select-sm d-flex justify-content-center"
+                                style="width: 100px;" name="column" [(ngModel)]="row[column]">
+                                <option value="P">Presente</option>
+                                <option value="T">Tardanza</option>
+                                <option value="A">Falta</option>
+                            </select>
+                            } @else if (column === 'alumno') {
+                            } @else if (row[column] === 'P') {
+                            <button mat-icon-button matTooltip="Presente">
+                                <mat-icon style="color: #198754;">check_circle</mat-icon>
+                            </button>
+                            } @else if (row[column] === 'T') {
+                            <button mat-icon-button matTooltip="Tardanza">
+                                <mat-icon style="color: #ffc107;">schedule</mat-icon>
+                            </button>
+                            } @else if (row[column] === 'A') {
+                            <button mat-icon-button matTooltip="Falta">
+                                <mat-icon style="color: #dc3545;">cancel</mat-icon>
+                            </button>
+                            }
+                            } @else {
+                            {{ row[column] }}
+                            }
+                        </td>
+                    </ng-container>
+
+                    }
+
+                    <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: tableColumns;"></tr>
+                </table>
+
+                <mat-paginator [pageSizeOptions]="[25, 50 , 100]" aria-label="Select page of users"></mat-paginator>
+
+            </div>
+        </div>
+    </div>
+</mat-card>

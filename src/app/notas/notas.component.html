@@ -1,0 +1,128 @@
+<app-titulo title="Notas" icon="edit_note"></app-titulo>
+
+<mat-card class="p-3">
+    <mat-card-subtitle>Obtener notas</mat-card-subtitle>
+   <form>
+    <div class="row">
+        <div class="col-12 col-md-4">
+            <mat-form-field>
+                <mat-label>Seleccione un turno</mat-label>
+                <mat-select name="turno" [(value)]="turno" (selectionChange)="obtenerCurso()">
+                    @for (turno of turnos; track $index) {
+                        <mat-option [value]="turno">{{turno.nombre}} </mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="col-12 col-md-4">
+            <mat-form-field>
+                <mat-label>Curso asociado</mat-label>
+                <mat-select [(value)]="curso" >
+                    @if(curso) {
+                        <mat-option  [value]="curso">{{ curso }}</mat-option>
+                    }
+                </mat-select>
+              </mat-form-field>
+        </div>
+    </div>
+   </form>
+
+
+</mat-card>
+<mat-card class="p-3 mt-2 mb-2">
+    <div class="row">
+      <div class="col-12">
+        <div class="row d-flex justify-content-between">
+          <div class="col-12 col-md-3 col-lg-3">
+              <mat-form-field>
+              <mat-label>Buscar</mat-label>
+              <input matInput (keyup)="applyFilter($event)" placeholder="búsqueda de un alumno" #input>
+            </mat-form-field>
+  
+          </div>
+          <div class="col-12 col-md-4 col-lg-4">
+              
+                <p class="notaMinima">Nota mínima aprobatoria: <strong>{{turno?.notaMinima}}</strong></p>
+              
+            
+          </div>
+        </div>
+        <div class="row d-flex justify-content-center">
+          <div class="col-12" style="overflow-x: auto;">
+            <table mat-table [dataSource]="dataSource" matSort class="table-EC">
+                        <ng-container matColumnDef="index" style="width: 50px !important;">
+            <mat-header-cell *matHeaderCellDef>#</mat-header-cell>
+            <mat-cell *matCellDef="let row; let i = index">{{ i + 1 }}</mat-cell>
+          </ng-container>
+                
+          @for (column of displayedColumns;let colIndex = $index; track column) {
+            <ng-container [matColumnDef]="column" [sticky]="column === 'alumno'">
+              
+              <mat-header-cell *matHeaderCellDef class="d-flex justify-content-center"
+             [class.alumno-col]="column === 'alumno'" 
+               [class.nota-col]="isNotaColumn(column) || column === 'finalGrade'" >
+            <div class="col-header">
+              <small class="text-sm"> {{ formatColumnNameLine1(column) | titlecase }}<br>{{ formatColumnNameLine2(column) }}</small>
+             
+            </div>
+          </mat-header-cell>
+          
+              <mat-cell *matCellDef="let row" class="d-flex justify-content-center"
+              [class.alumno-col]="column === 'alumno'"
+              [class.nota-col]="isNotaColumn(column) || column === 'finalGrade'">
+                @if (isNotaColumn(column)) {
+                  <input class="text-center" type="number" 
+                  placeholder="" aria-label="ingreso de notas"
+                  [(ngModel)]="row[column]"
+                             [attr.max]="getValorMaximo(column)"
+                             [attr.min]="0"
+                             (change)="validarNota(row, column, colIndex);"
+                             [disabled]="turno?.registroCerrado">
+                } @else {
+                  <strong
+            *ngIf="column === 'finalGrade'; else normalCell"
+            [ngClass]="{
+              'text-success': row[column] >= turno?.notaMinima,
+              'text-danger': row[column] < turno?.notaMinima
+            }"
+          >
+            {{ row[column] }}
+          </strong>
+          <ng-template #normalCell class="">
+          
+              {{ row[column] }}
+    
+          </ng-template>
+                }
+              </mat-cell>
+          
+            </ng-container>
+          }
+          
+            <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: tableColumns;"></mat-row>
+          
+              <!-- Row shown when there is no matching data. -->
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="10">No se encontraron datos: "{{input.value}}"</td>
+              </tr>
+            </table>
+          
+            <mat-paginator [pageSizeOptions]="[25, 50 , 100]" aria-label="Select page of users"></mat-paginator>
+    
+          </div>
+        </div>
+        <div class="row  mt-2">
+          <div class="col-12 d-flex justify-content-center">
+            <button mat-flat-button (click)="confirmarCerrarActa()"  [disabled]="tieneNotasVacias() || turno.registroCerrado" >
+            <mat-icon>close</mat-icon>
+              CERRAR ACTA
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div>
+</div>
+</mat-card>

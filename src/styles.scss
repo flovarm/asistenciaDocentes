@@ -1,1 +1,158 @@
-/* You can add global styles to this file, and also import other style files */
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '@angular/material' as mat;
+
+html {
+  color-scheme: light dark;
+  @include mat.theme((
+    color: mat.$azure-palette,
+      primary: mat.$red-palette,
+      tertiary: mat.$azure-palette,
+      typography: Roboto,
+      theme-type: var(color-scheme),
+      use-system-variables: true,
+  ));
+}/* You can add global styles to this file, and also import other style files */
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+   @include mat.form-field-overrides((
+    outlined-disabled-input-text-color: var(--mat-sys-on-surface),
+    outlined-disabled-label-text-color: var(--mat-sys-on-surface),
+  ));
+}
+
+@import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+
+h2,
+p {
+  padding: 16px;
+}
+
+.mr-8 {
+  margin-right: 8px;
+}
+
+.tabla-EC{
+  @include mat.table-overrides((
+    background-color: var(--mat-sys-on-outline)
+  ));
+}
+
+  .mat-mdc-header-cell {
+    background-color: #314f9b !important;
+    color: white !important;
+  }
+
+.mat-mdc-form-field {
+ width: 100%;
+
+}
+
+@include mat.form-field-overrides((
+  filled-container-color: var(--mat-sys-inverse-on-surface),
+  filled-focus-active-indicator-color: var(--mat-sys-primary),
+));
+
+
+@include mat.sidenav-overrides((
+  container-background-color: var(--mat-sys-on-tertiary-fixed),
+  container-text-color: var(--mat-sys-on-surface),
+  container-divider-color: var(--mat-sys-on-outline)
+));
+
+
+@include mat.card-overrides((
+  
+  ));
+
+@include mat.tabs-overrides(( background-color: var(--mat-sys-primary), active-hover-indicator-color:var(--mat-sys-primary) ));
+
+
+  .cal-scheduler-time-segment {
+    font-size: small !important;
+  }
+
+  .NgxEditor__MenuBar{
+    background-color: var(--mat-sys-surface) !important;
+    color: var(--mat-sys-on-surface) !important;
+  }
+
+ 
+
+
+  .eliminar {
+    @include mat.button-overrides((
+      filled-container-color: #e02b20,
+      filled-label-text-color: white,
+    ));
+  }
+
+  .mat-elevation-z8 {
+  max-width: 100%;
+  overflow: auto;
+  }
+
+  .cal-scheduler-time-segment{
+    background-color: var(--mat-sys-surface);
+    color:  var(--mat-sys-on-surface);
+  }
+
+  .cal-scheduler-hour-segments
+  {
+    background-color: var(--mat-sys-surface) !important;
+    color:  var(--mat-sys-on-surface) !important;
+  }
+  .cal-scheduler-event-title {
+    color: var(--mat-sys-surface-container-lowest);
+  }
+  .cal-scheduler-event-content {
+    color: var(--mat-sys-surface-container-lowest);
+  }
+
+  .colors {
+    background-color: var(--mat-sys-surface);
+    color: var(--mat-sys-on-surface);
+  }
+
+  .g-input {
+    color: var(--mat-sys-on-outline);
+  }
+
+.cal-scheduler-view .cal-scheduler-headers .cal-header.cal-today {
+  background-color: var(--mat-sys-primary) !important;
+  color: var(--mat-sys-on-primary) !important;
+}
+
+
+.fila-color {
+  @include mat.table-overrides((
+    row-item-outline-color: green,
+    row-item-label-text-color: green
+  ));
+}
+
+textarea{
+  field-sizing: content;
+}
+
+.snack-success {
+  @include mat.snack-bar-overrides((
+    container-color:  var(--mat-sys-primary),
+   supporting-text-color: var(--mat-sys-on-primary)
+  ));
+}
+ .snack-error {
+  @include mat.snack-bar-overrides((
+    container-color:var(--mat-sys-error),
+    supporting-text-color: var(--mat-sys-on-error)
+  ));
+}
+
+

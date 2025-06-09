@@ -1,0 +1,64 @@
+@use '@angular/material' as mat;
+
+
+.col-header {
+  white-space: normal; /* Permitir saltos de línea */
+  text-align: center;
+}
+
+.table-EC{
+  @include mat.table-overrides((
+   background-color: var(--mat-sys-surface),
+   row-item-container-height: '40px',
+  ));
+}
+
+.form-nota {
+  @include mat.form-field-overrides((
+   outlined-label-text-color: var(--mat-sys-on-surface)
+  ));
+}
+
+.nota-col {
+  min-width: 100px !important;
+  max-width: 80px !important;
+  width: 80px !important;
+  padding-left: 2px !important;
+  padding-right: 2px !important;
+  text-align: center;
+}
+
+
+
+.alumno-col {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* Quitar flechas en Chrome, Safari, Edge, Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Quitar flechas en Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.notaMinima {
+  background-color: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-primary-container);
+}
+
+.mat-column-index {
+  min-width: 60px !important;
+  max-width: 60px !important;
+  width: 60px !important;
+  padding-left: 2px !important;
+  padding-right: 2px !important;
+  text-align: center;
+}
