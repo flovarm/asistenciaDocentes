@@ -1,0 +1,54 @@
+<app-titulo title="Mi Horario" icon="schedule"></app-titulo>
+
+<mat-card class="mt-1 mb-1" appearance="outlined">
+  <mat-card-content>
+    <mat-card-header>
+      <mat-card-subtitle>Verificar Horario</mat-card-subtitle>
+    </mat-card-header>
+
+    
+
+    <div class="row justify-content-between">
+      <div class="col-12 col-md-6 col-xl-6 mt-3">
+        <div class="text-left">
+          <button mat-raised-button mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate" [daysInWeek]="viewDays"
+                  [excludeDays]="excludeDays" [disabled]="prevBtnDisabled" (viewDateChange)="dateOrViewChanged()">
+            <mat-icon fontIcon="chevron_left"></mat-icon> ANTERIOR
+          </button>
+          <button mat-raised-button mwlCalendarToday [(viewDate)]="viewDate" (viewDateChange)="dateOrViewChanged()">
+            <mat-icon fontIcon="event"></mat-icon> HOY
+          </button>
+          <button mat-raised-button mwlCalendarNextView [view]="view" [(viewDate)]="viewDate" [daysInWeek]="viewDays"
+                  [excludeDays]="excludeDays" [disabled]="nextBtnDisabled" (viewDateChange)="dateOrViewChanged()">
+            <mat-icon fontIcon="chevron_right"></mat-icon> SIGUIENTE
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+<mat-card class="mt-1 mb-1" appearance="outlined">
+  <mat-card-content>
+    @if (events) {
+
+    <div [ngSwitch]="view" class="d-block">
+      <calendar-scheduler-view *ngSwitchCase="CalendarView.Week" [viewDays]="viewDays" [viewDate]="viewDate"
+                               [events]="events" [locale]="locale" [responsive]="true" [weekStartsOn]="weekStartsOn"
+                               [excludeDays]="excludeDays" [startsWithToday]="startsWithToday" [hourSegments]="hourSegments"
+                               [dayStartHour]="dayStartHour" [dayEndHour]="dayEndHour" [dayModifier]="dayModifier"
+                               [hourModifier]="hourModifier" [segmentModifier]="segmentModifier"  [eventModifier]="eventModifier"
+                               [showEventActions]="true" [showSegmentHour]="true" [zoomEventOnHover]="true"
+                               (viewDaysChanged)="viewDaysChanged($event)" (dayHeaderClicked)="dayHeaderClicked($event.day)"
+                               (hourClicked)="hourClicked($event.hour)" (segmentClicked)="segmentClicked('Clicked', $event.segment)"
+                               (eventClicked)="eventClicked('Clicked', $event.event)" (eventTimesChanged)="eventTimesChanged($event)"
+                               [refresh]="refresh">
+      </calendar-scheduler-view>
+    </div>
+
+    }@else {
+
+    }
+
+  </mat-card-content>
+</mat-card>

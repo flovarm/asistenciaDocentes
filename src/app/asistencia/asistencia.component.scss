@@ -1,0 +1,10 @@
+@use '@angular/material' as mat;
+.marcaciones {
+    @include mat.card-overrides((
+    elevated-container-color: var(--mat-sys-tertiary-container),
+  ));
+}
+
+.text-tertary{
+    color: var(--mat-sys-on-tertiary-container)
+}

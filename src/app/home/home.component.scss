@@ -17,7 +17,7 @@
 
   .mat-list-group {
     @include mat.list-overrides((
-        list-item-selected-container-color: var(--mat-sys-primary),
+        list-item-selected-container-color: #003384,
   ));
   }
 .mat-list-item {
@@ -58,7 +58,9 @@
 
     @include mat.list-overrides((
       list-item-label-text-color: white,
-        list-item-container-color: #314f9b,
+        list-item-container-color: #003384,
         list-item-leading-icon-color: white,
+        list-item-hover-label-text-color: white,
+        list-item-focus-label-text-color: white,
     ));
   }

@@ -1,0 +1,15 @@
+
+<mat-card class="p-4">
+  <mat-card-title class="title">Fecha: {{data.start | date: 'dd-MM-yyyy'}}</mat-card-title>
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="center">
+    <mat-tab label="Mi turno">
+       <app-profesor [data]="data"></app-profesor>
+    </mat-tab>
+    <mat-tab label="Reemplazo">
+        <app-reemplazo [data]="data"></app-reemplazo>
+    </mat-tab>
+ </mat-tab-group>   
+</mat-card>
+<mat-dialog-actions>
+  <button matButton [mat-dialog-close] cdkFocusInitial>CERRAR</button>
+</mat-dialog-actions>

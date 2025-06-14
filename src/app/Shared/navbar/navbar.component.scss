@@ -4,11 +4,10 @@ mat-toolbar {
   display: flex;
   align-items: center;
   height: 80px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+
   @include mat.toolbar-overrides(
     (
-       container-background-color: #314f9b,
+       container-background-color: #003384,
       container-text-color: white,
     )
   );
@@ -23,8 +22,8 @@ mat-toolbar {
 .selected-theme {
   @include mat.menu-overrides(
     (
-      item-icon-color: white,
-      item-label-text-color: white,
+      item-icon-color: var(--mat-sys-on-primary),
+      item-label-text-color: var(--mat-sys-on-primary),
     )
   );
 }
@@ -38,4 +37,14 @@ mat-toolbar {
   top: 0;
   left: 0;
   z-index: 2
+}
+
+img[width="250"] {
+  transition: width 0.2s;
+}
+
+@media (max-width: 600px) {
+  img[width="250"] {
+    width: 200px !important;
+  }
 }

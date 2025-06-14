@@ -1,0 +1,78 @@
+
+  @if (mostrarrefresh) {
+      <div class="d-flex align-items-center justify-content-center" >
+        <div class="row">
+          <div class="col-12 mt-5">
+            <div class="alert alert-primary" role="alert">
+              Su turno aparecera 5 minutos antes de su inicio
+            </div>
+            <div class="col-mt-1 d-flex justify-content-center">
+              <button mat-flat-button (click)="obtenerHorario()">
+                <mat-icon>refresh</mat-icon>Actualizar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }@else {
+    
+      <div class="container mt-2">
+        <mat-card class="p-4 mb-2">
+          <form [formGroup]="asistenciaForm">
+            <mat-form-field appearance="outline">
+              <mat-label>Profesor</mat-label>
+             
+              <input type="text" matInput formControlName="profesor">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Curso</mat-label>
+             
+              <input type="text" matInput formControlName="curso">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Aula</mat-label>
+             
+              <input type="text" matInput formControlName="aula">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Turrno</mat-label>
+             
+              <input type="text" matInput formControlName="turno">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Desde - Hasta</mat-label>
+             
+              <input type="text" matInput formControlName="descripcion">
+            </mat-form-field>
+            
+          </form>
+    @if ( isCurrentEvent(data)) {
+        <mat-card-actions class="d-flex justify-content-between">
+          <button mat-raised-button [disabled]="asistenciaForm.get('horaEntrada')?.value "  (click)="entrada()">
+            <mat-icon class="material-symbols-outlined">
+              arrow_forward_ios           
+              </mat-icon>
+            ENTRADA</button>
+          <button mat-raised-button (click)="salida()">
+            <mat-icon class="material-symbols-outlined">
+              arrow_back_ios_new
+              </mat-icon>
+            SALIDA</button>
+        </mat-card-actions>
+        
+    }
+        
+      </mat-card>
+      
+      @if(asistenciaForm.get('horaEntrada')?.value ) {
+        <div class="alert alert-info" role="alert">
+          Hora de entrada <strong>{{asistenciaForm.get('horaEntrada')?.value | date: 'HH:mm'}}</strong>
+        </div>
+      }
+      @if(asistenciaForm.get('horaSalida')?.value) {
+        <div class="alert alert-secondary" role="alert">
+          Hora de Salida <strong>{{asistenciaForm.get('horaSalida')?.value | date: 'HH:mm'}}</strong>
+        </div>
+      }
+      </div>
+    }

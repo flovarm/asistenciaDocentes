@@ -7,11 +7,11 @@
         <div class="col-12">
             <div class="login-container">
                 <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form" aria-labelledby="login-title">
-                  <h1 class="text-center title">Docentes</h1>
+                  <h1 class="text-center title">DOCENTES</h1>
                   
                   <div class="form-group logo-container">
-                    <img src="images/logoActual.png" alt="" width="300px" height="200px">
-                    <mat-form-field>
+                <img src="images/logoActual_azul.png" alt="" [width]="150" lazyload="lazy" priority>
+                    <mat-form-field class="mt-4">
                         <mat-label>Usuario</mat-label>
                         <input type="text" formControlName="username" matInput placeholder="Ingresa tu usuario" aria-describedby="username-error">
                         <mat-error>Ingrese un usuario válido</mat-error>

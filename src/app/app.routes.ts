@@ -7,6 +7,7 @@ import { AsistenciaComponent } from './asistencia/asistencia.component';
 import { AsistenciaAlumnosComponent } from './asistencia-alumnos/asistencia-alumnos.component';
 import { authGuard } from './_guards/auth.guard';
 import { HomeComponent } from './home/home.component';
+import { HorarioDetalleComponent } from './horario-detalle/horario-detalle.component';
 
 export const routes: Routes = [
     {
@@ -44,6 +45,14 @@ export const routes: Routes = [
                     'icon': 'lists', 
                 },
                 component: AsistenciaAlumnosComponent
+            },
+            {
+                path: 'horario',
+                title: 'Horario',
+                data: {
+                    'icon': 'schedule', 
+                },
+                component: HorarioDetalleComponent
             }
         ]
     },

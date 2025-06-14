@@ -56,6 +56,8 @@ export class AsistenciaAlumnosComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   private snack = inject(MatSnackBar);
+  clasesRecuperacion: any[] = [];
+  advertenciaAsistencia: boolean = true;
   profesor: Profesor = JSON.parse(localStorage.getItem('profesor'));
   ngOnInit(): void {
     this.obtenerUltimoPeriodo();
@@ -124,6 +126,7 @@ export class AsistenciaAlumnosComponent implements OnInit {
         this.dataSource = new MatTableDataSource<any>(adaptados);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
+       // this.listarRecuperacionClase();
       },
       error: (error) => {
         console.error('Error al listar asistencia:', error);
@@ -154,16 +157,50 @@ export class AsistenciaAlumnosComponent implements OnInit {
   }
 
   guardarAsistencia(): void {
-    const today = this.getTodayString();
-    const asistencias = this.dataSource.data.map(row => ({
-      idAlumno: row.idAlumno,
-      idHorario: row.idHorario,
-      fecha: today,
-      estado: row[today] || 'F' // Por defecto "F" si no hay valor
-    }));
-    console.log('Asistencias a guardar:', asistencias);
-    this.asistenciaAlumnoService.GuardarAsistencias(asistencias).subscribe({
-      next: () => this.snack.open('Asistencias guardadas', 'Cerrar', { duration: 3000 , panelClass: ['snack-success'] }),
+  const today = new Date(this.getTodayString());
+  // Filtra solo las columnas que son fechas
+  const fechas = this.displayedColumns.filter(col => this.isDateColumn(col));
+  const asistencias = [];
+
+  this.dataSource.data.forEach(row => {
+    debugger;
+    fechas.forEach(fecha => {
+      const fechaDate = new Date(fecha);
+      // Compara solo año, mes y día
+      if (fechaDate <= today) {
+        asistencias.push({
+          idAlumno: row.idAlumno,
+          idHorario: row.idHorario,
+          fecha: fecha,
+          estado: row[fecha] || 'F' // Por defecto "F" si no hay valor
+        });
+      }
     });
+  });
+  this.asistenciaAlumnoService.GuardarAsistencias(asistencias).subscribe({
+    next: () => {
+      this.snack.open('Asistencias guardadas', 'Cerrar', { duration: 3000, panelClass: ['snack-success'] }),
+      this.advertenciaAsistencia = false;
+    },
+  });
   }
+
+  // listarRecuperacionClase() {
+  //   this.asistenciaAlumnoService.recuperacionClases(this.turno?.idHorario).subscribe({
+  //     next: (datos: any[]) => {
+      
+  //         this.clasesRecuperacion = datos;
+  //         console.log('Clases de recuperación:', this.clasesRecuperacion);
+        
+        
+  //     } 
+  //   });
+  // }
+
+isEditableDate(column: string): boolean {
+  const today = new Date();
+  const colDate = new Date(column);
+  // Compara solo año, mes y día
+  return colDate <= today;
+}
 }

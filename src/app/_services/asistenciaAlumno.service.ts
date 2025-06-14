@@ -17,4 +17,8 @@ import { AsistenciaAlumno } from "../_models/asistenciaAlumno";
     return this.http.post(this.apiUrl , asistencias);
     }
 
+    recuperacionClases(idHorario: number) {
+        return this.http.get<AsistenciaAlumno[]>(this.apiUrl + "RecuperacionClase/" + idHorario);
+    }
+
 }
