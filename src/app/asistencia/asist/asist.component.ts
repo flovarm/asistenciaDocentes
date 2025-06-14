@@ -13,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ConfigService } from '../../_services/config.service';
 
 @Component({
   selector: 'app-asist',
@@ -34,6 +35,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class AsistComponent implements OnInit{
   profesorService = inject(ProfesorService);
   horarioService = inject(HorarioService);
+   aulaService  = inject(ConfigService);
   asistenciaDocenteService = inject(AsistenciaProfesorService);
   private fb = inject(FormBuilder);
   aula = 'Intranet Docentes';
@@ -43,6 +45,12 @@ export class AsistComponent implements OnInit{
   mostrarrefresh = true;
   ngOnInit(): void {
     this.obtenerHorario();
+    this.getAula();
+  }
+
+   async getAula() {
+    await this.aulaService.loadAula();
+    this.aula = this.aulaService.getAula();
     this.initializeForm();
   }
   
@@ -114,35 +122,28 @@ export class AsistComponent implements OnInit{
 
   entrada() {
     let objentrada = Object.assign({} , this.asistenciaForm.getRawValue()); 
-    if (objentrada.modalidad == 'Presencial'){
-      this.snakBar.open('Es un horario presencial debes hacerlo desde la aplicación de escritorio' , 'OK' ,  {
-        verticalPosition: 'top',
-        panelClass: ['snack-error']
-      });
-    }else {
       this.asistenciaDocenteService.Entrada(objentrada).subscribe(() => {
         this.mostrarrefresh = false;
+        this.snakBar.open('Se registro su entrada' , 'OK' ,  {
+         verticalPosition: 'bottom',
+         duration: 3000,
+        panelClass: ['snack-success']
+      });
         this.obtenerHorario();
       })
-
-    }
   }
 
   salida() {
     let objsalida = Object.assign({} , this.asistenciaForm.getRawValue());
-    if (objsalida.modalidad == 'Presencial')
-    {
-      this.snakBar.open('Es un horario presencial debes hacerlo desde la aplicación de escritorio' , 'OK' ,  {
-         verticalPosition: 'top',
-        panelClass: ['snack-error']
-      });
-    }else {
       this.asistenciaDocenteService.Salida(objsalida).subscribe(() => {
         this.mostrarrefresh = false;
+        this.snakBar.open('Se registro su salida' , 'OK' ,  {
+         verticalPosition: 'bottom',
+         duration: 3000,
+        panelClass: ['snack-success']
+      });
         this.obtenerHorario();
       })
-
-    }
   }
 
 

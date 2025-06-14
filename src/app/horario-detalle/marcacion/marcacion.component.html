@@ -1,6 +1,10 @@
 
 <mat-card class="p-4">
-  <mat-card-title class="title">Fecha: {{data.start | date: 'dd-MM-yyyy'}}</mat-card-title>
+  <div class="row d-flex justify-content-between align-items-center">
+    <div class="col-10">
+      <mat-card-title class="title">Fecha: {{data.start | date: 'dd-MM-yyyy'}}</mat-card-title> 
+    </div><div class="col-2"> <button matButton [mat-dialog-close] cdkFocusInitial>CERRAR</button></div>
+  </div>
     <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="center">
     <mat-tab label="Mi turno">
        <app-profesor [data]="data"></app-profesor>
@@ -11,5 +15,5 @@
  </mat-tab-group>   
 </mat-card>
 <mat-dialog-actions>
-  <button matButton [mat-dialog-close] cdkFocusInitial>CERRAR</button>
+
 </mat-dialog-actions>

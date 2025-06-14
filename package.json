@@ -1,15 +1,15 @@
 {
   "name": "docentes",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "main": "main.js",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "build": "ng build --configuration=production --base-href ./",
+    "electron": "electron .",
+    "start": "npm run build && npm run electron",
+    "dist": "electron-builder"
   },
-  "private": true,
-  "dependencies": {
+   "dependencies": {
     "@angular/animations": "^20.0.2",
     "@angular/cdk": "^20.0.2",
     "@angular/common": "^20.0.2",
@@ -29,11 +29,15 @@
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
   },
+
   "devDependencies": {
-    "@angular/build": "^20.0.1",
+    "@angular/build": "^20.0.2",
     "@angular/cli": "^20.0.1",
     "@angular/compiler-cli": "^20.0.2",
     "@types/jasmine": "~5.1.0",
+    "electron": "^36.4.0",
+    "electron-builder": "^26.0.12",
+    "electron-updater": "^6.6.2",
     "jasmine-core": "~5.6.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
@@ -41,5 +45,31 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.8.3"
+  },
+  "build": {
+    "appId": "com.tuempresa.docentes",
+    "productName": "Docentes",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/browser/**/*",
+      "main.js",
+      "config.html"
+    ],
+    "extraMetadata": {
+      "main": "main.js"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "flovarm",
+        "repo": "asistenciaDocentes"
+      }
+    ]
   }
+
 }

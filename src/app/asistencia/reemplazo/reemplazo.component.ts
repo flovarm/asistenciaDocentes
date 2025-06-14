@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ConfigService } from '../../_services/config.service';
 
 @Component({
   selector: 'app-reemplazo',
@@ -30,6 +31,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class ReemplazoComponent {
   profesorService = inject(ProfesorService);
   horarioService = inject(HorarioService);
+    aulaService  = inject(ConfigService);
   asistenciaDocenteService = inject(AsistenciaProfesorService);
   snakBar = inject(MatSnackBar);
   private fb = inject(FormBuilder);
@@ -38,10 +40,17 @@ export class ReemplazoComponent {
   asistenciaForm!: FormGroup;
   mostrarrefresh = true;
   ngOnInit(): void {
-    this.initializeForm();
+   // this.initializeForm();
+   this.getAula();
     this.obtenerHorario();
   }
   
+
+  async getAula() {
+    await this.aulaService.loadAula();
+    this.aula = this.aulaService.getAula();
+    this.initializeForm();
+  }
 
   
   initializeForm() {
@@ -109,34 +118,35 @@ export class ReemplazoComponent {
 
   entrada() {
     let objentrada = Object.assign({} , this.asistenciaForm.getRawValue()); 
-    if (objentrada.modalidad == 'Presencial')
-    {
-      this.snakBar.open('Es un horario presencial debes hacerlo desde la aplicación de escritorio' , 'OK' ,  {
-         verticalPosition: 'top',
-        panelClass: ['snack-error']
-      });
-    }else {
       this.asistenciaDocenteService.EntradaReemplazo(objentrada).subscribe(() => {
         this.mostrarrefresh = false;
         this.obtenerHorario();
+        this.snakBar.open('Se registro su entrada' , 'OK' ,  {
+         verticalPosition: 'bottom',
+         duration: 3000,
+        panelClass: ['snack-success']
+      });
       })
-    }
+    
   }
 
   salida() {
     let objsalida = Object.assign({} , this.asistenciaForm.getRawValue());
-    if (objsalida.modalidad == 'Presencial') {
       this.snakBar.open('Es un horario presencial debes hacerlo desde la aplicación de escritorio' , 'OK' ,  {
          verticalPosition: 'top',
         panelClass: ['snack-error']
       });
 
-    }else {
+    
         this.asistenciaDocenteService.SalidaReemplazo(objsalida).subscribe(() => {
+          this.snakBar.open('Se registro su salida' , 'OK' ,  {
+         verticalPosition: 'bottom',
+         duration: 3000,
+        panelClass: ['snack-success']
+      });
           this.mostrarrefresh = false;
           this.obtenerHorario();
         })
-    }
   }
 
 }

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Configuración del Aula</title>
+</head>
+<body>
+  <h2>Configurar Aula</h2>
+  <input id="aula" type="text" placeholder="Número de aula" />
+  <button onclick="guardar()">Guardar</button>
+
+  <script>
+    const { ipcRenderer } = require("electron");
+
+    function guardar() {
+      const aula = document.getElementById("aula").value.trim();
+      if (aula) {
+        ipcRenderer.send("save-aula", aula);
+      } else {
+        alert("Por favor, ingresa un número de aula.");
+      }
+    }
+  </script>
+</body>
+</html>

@@ -248,7 +248,7 @@ if (this.isCurrentEvent(event)) {
 
   eventClicked(action: string, event: CalendarSchedulerEvent): void {
      this.dialog.open(MarcacionComponent, {
-      width: 'auto',
+      width: '600px',
       height: '700px',
       data:  event ,
       disableClose: true,
