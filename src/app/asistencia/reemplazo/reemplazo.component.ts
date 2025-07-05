@@ -53,6 +53,7 @@ export class ReemplazoComponent {
   }
 
   
+  
   initializeForm() {
     this.asistenciaForm = this.fb.group({
       idHorarioDetalle: [0],
@@ -72,7 +73,7 @@ export class ReemplazoComponent {
       idProfesor: [this.profesor.idProfesor],
       profesor: [{ value: '', disabled: true }],
       descripcion: [{ value: '', disabled: true }],
-      insertApplicationName: this.aula,
+      insertApplicationName: this.aula == null ? 'Intranet Docentes' : this.aula ,
       horaEntrada: [],
       horaSalida: [],
       modalidad: ''
@@ -118,6 +119,14 @@ export class ReemplazoComponent {
 
   entrada() {
     let objentrada = Object.assign({} , this.asistenciaForm.getRawValue()); 
+    if (objentrada.modalidad == 'Presencial')
+    {
+      this.snakBar.open('Es un horario presencial debes hacerlo desde la aplicación de escritorio' , 'OK' ,  {
+         verticalPosition: 'top',
+        panelClass: ['snack-error']
+      });
+    }else {
+     
       this.asistenciaDocenteService.EntradaReemplazo(objentrada).subscribe(() => {
         this.mostrarrefresh = false;
         this.obtenerHorario();
@@ -127,15 +136,18 @@ export class ReemplazoComponent {
         panelClass: ['snack-success']
       });
       })
-    
+    }
   }
 
   salida() {
     let objsalida = Object.assign({} , this.asistenciaForm.getRawValue());
+      if (objsalida.modalidad == 'Presencial')
+    {
       this.snakBar.open('Es un horario presencial debes hacerlo desde la aplicación de escritorio' , 'OK' ,  {
          verticalPosition: 'top',
         panelClass: ['snack-error']
       });
+    }else {
 
     
         this.asistenciaDocenteService.SalidaReemplazo(objsalida).subscribe(() => {
@@ -148,5 +160,6 @@ export class ReemplazoComponent {
           this.obtenerHorario();
         })
   }
+}
 
 }

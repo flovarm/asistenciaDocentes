@@ -13,6 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { CalendarSchedulerEvent } from 'angular-calendar-scheduler';
+import { ConfigService } from '../../../_services/config.service';
 
 @Component({
   selector: 'app-reemplazo',
@@ -33,6 +34,7 @@ export class ReemplazoComponent {
  profesorService = inject(ProfesorService);
   horarioService = inject(HorarioService);
   asistenciaDocenteService = inject(AsistenciaProfesorService);
+   aulaService  = inject(ConfigService);
   snakBar = inject(MatSnackBar);
   private fb = inject(FormBuilder);
   aula = 'Intranet Docentes';
@@ -44,7 +46,11 @@ export class ReemplazoComponent {
     this.obtenerHorario();
   }
   
-
+  async getAula() {
+    await this.aulaService.loadAula();
+    this.aula = this.aulaService.getAula();
+    this.initializeForm();
+  }
   
   initializeForm() {
     this.asistenciaForm = this.fb.group({
@@ -65,7 +71,7 @@ export class ReemplazoComponent {
       idProfesor: [this.profesor.idProfesor],
       profesor: [{ value: '', disabled: true }],
       descripcion: [{ value: '', disabled: true }],
-      insertApplicationName: this.aula,
+      insertApplicationName: this.aula == null ? 'Intranet Docentes' : this.aula ,
       horaEntrada: [],
       horaSalida: [],
       modalidad: ''
@@ -111,34 +117,33 @@ export class ReemplazoComponent {
 
   entrada() {
     let objentrada = Object.assign({} , this.asistenciaForm.getRawValue()); 
-    // if (objentrada.modalidad == 'Presencial')
-    // {
-    //   this.snakBar.open('Es un horario presencial debes hacerlo desde la aplicación de escritorio' , 'OK' ,  {
-    //      verticalPosition: 'top',
-    //     panelClass: ['snack-error']
-    //   });
-    // }else {
+    if (objentrada.modalidad == 'Presencial')
+    {
+      this.snakBar.open('Es un horario presencial debes hacerlo desde la aplicación de escritorio' , 'OK' ,  {
+         verticalPosition: 'top',
+        panelClass: ['snack-error']
+      });
+    }else {
       this.asistenciaDocenteService.EntradaReemplazo(objentrada).subscribe(() => {
         this.mostrarrefresh = false;
         this.obtenerHorario();
       })
-    //}
+    }
   }
 
   salida() {
     let objsalida = Object.assign({} , this.asistenciaForm.getRawValue());
-    // if (objsalida.modalidad == 'Presencial') {
-    //   this.snakBar.open('Es un horario presencial debes hacerlo desde la aplicación de escritorio' , 'OK' ,  {
-    //      verticalPosition: 'top',
-    //     panelClass: ['snack-error']
-    //   });
-
-    // }else {
+     if (objsalida.modalidad == 'Presencial') {
+       this.snakBar.open('Es un horario presencial debes hacerlo desde la aplicación de escritorio' , 'OK' ,  {
+          verticalPosition: 'top',
+         panelClass: ['snack-error']
+       });
+    }else {
         this.asistenciaDocenteService.SalidaReemplazo(objsalida).subscribe(() => {
           this.mostrarrefresh = false;
           this.obtenerHorario();
         })
-   // }
+    }
   }
 
   isCurrentEvent(event: CalendarSchedulerEvent): boolean {

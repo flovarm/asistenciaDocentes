@@ -11,6 +11,9 @@ import { environment } from "../../environments/environment.development";
     listarNotas(idHorario: number, idFormatoNota: number){
         return this.http.get(this.apiUrl + idHorario + '/' + idFormatoNota );
     }
+    listarNotasRecuperacion(idHorario: number, idFormatoNota: number){
+        return this.http.get(this.apiUrl + 'Recuperacion/' + idHorario + '/' + idFormatoNota );
+    }
 
     actualizarNota(nota: any) {
         return this.http.patch(this.apiUrl, nota);

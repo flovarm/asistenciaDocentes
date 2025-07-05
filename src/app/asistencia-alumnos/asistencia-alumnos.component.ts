@@ -56,8 +56,10 @@ export class AsistenciaAlumnosComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   private snack = inject(MatSnackBar);
-  clasesRecuperacion: any[] = [];
+ clasesRecuperacion: any[] = [];
+displayedColumnsRecuperacion: string[] = ['numero','alumno', 'accion'];
   advertenciaAsistencia: boolean = true;
+  dataSourceRecuperacion = new MatTableDataSource<any>([]);
   profesor: Profesor = JSON.parse(localStorage.getItem('profesor'));
   ngOnInit(): void {
     this.obtenerUltimoPeriodo();
@@ -126,7 +128,7 @@ export class AsistenciaAlumnosComponent implements OnInit {
         this.dataSource = new MatTableDataSource<any>(adaptados);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-       // this.listarRecuperacionClase();
+        this.listarRecuperacionClase();
       },
       error: (error) => {
         console.error('Error al listar asistencia:', error);
@@ -158,7 +160,6 @@ export class AsistenciaAlumnosComponent implements OnInit {
 
   guardarAsistencia(): void {
   const today = new Date(this.getTodayString());
-  // Filtra solo las columnas que son fechas
   const fechas = this.displayedColumns.filter(col => this.isDateColumn(col));
   const asistencias = [];
 
@@ -185,22 +186,52 @@ export class AsistenciaAlumnosComponent implements OnInit {
   });
   }
 
-  // listarRecuperacionClase() {
-  //   this.asistenciaAlumnoService.recuperacionClases(this.turno?.idHorario).subscribe({
-  //     next: (datos: any[]) => {
-      
-  //         this.clasesRecuperacion = datos;
-  //         console.log('Clases de recuperación:', this.clasesRecuperacion);
-        
-        
-  //     } 
-  //   });
-  // }
+  listarRecuperacionClase() {
+    this.asistenciaAlumnoService.recuperacionClases(this.turno?.idHorario).subscribe({
+      next: (datos: any[]) => {
+        console.log(datos)
+         this.clasesRecuperacion = datos.map(d => ({
+        ...d,
+        estado: d.estado === null ? 'P' : d.estado
+      }));
+      this.dataSourceRecuperacion.data = this.clasesRecuperacion;
+      } 
+    });
+  }
 
 isEditableDate(column: string): boolean {
   const today = new Date();
   const colDate = new Date(column);
   // Compara solo año, mes y día
   return colDate <= today;
+}
+
+ guardarRecuperado(): void {
+  const asistencias = [];
+
+  this.dataSourceRecuperacion.data.forEach(row => {
+    const fechaFormateada = row.fecha.split('T')[0];
+    asistencias.push({
+          idAlumno: row.idAlumno,
+          idHorario: row.idHorario,
+          fecha: fechaFormateada,
+          estado: row.estado || 'F' // Por defecto "F" si no hay valor
+        });
+  });
+
+  console.log(asistencias)
+  this.asistenciaAlumnoService.GuardarAsistencias(asistencias).subscribe({
+    next: () => {
+      this.snack.open('Asistencias guardadas', 'Cerrar', { duration: 3000, panelClass: ['snack-success'] }),
+      this.advertenciaAsistencia = false;
+    },
+  });
+  }
+
+ getMesDia(): string {
+  const date = new Date();
+  const mes = String(date.getMonth() + 1).padStart(2, '0');
+  const dia = String(date.getDate()).padStart(2, '0');
+  return `${mes}/${dia}`;
 }
 }

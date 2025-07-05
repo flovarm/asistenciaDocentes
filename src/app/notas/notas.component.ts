@@ -50,13 +50,17 @@ export class NotasComponent implements OnInit{
   periodoService = inject(PeriodoService);
   notasService = inject(NotasService);
   periodo: Periodo;
+  notaErrores: { [key: string]: boolean } = {};
   horarioService = inject(HorarioService);
   curso: string = '';
   readonly dialog = inject(MatDialog);
   private snack = inject(MatSnackBar);
   dataSource =new MatTableDataSource<any>();
+   dataSourceRecuperacion =new MatTableDataSource<any>();
   tableColumns: string[] = []; 
   displayedColumns: string[] = [];
+  displayedColumnsRecuperacion: string[] = [];
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -84,6 +88,7 @@ export class NotasComponent implements OnInit{
 listarNotas(idHorario , idFormatoNota) {
   this.notasService.listarNotas(idHorario , idFormatoNota).subscribe({
     next : (result: any[]) => {
+      this.listarNotasRecuperacion(idHorario, idFormatoNota);
       if (result.length > 0) {
         const notaEjemplo = result[0];
         // Obtén todas las claves de notas, ignorando cualquier variante de finalGrade
@@ -105,6 +110,34 @@ listarNotas(idHorario , idFormatoNota) {
       } else {
         this.displayedColumns = [];
         this.dataSource.data = [];
+      }
+    }
+  })
+}
+
+
+listarNotasRecuperacion(idHorario , idFormatoNota) {
+  this.notasService.listarNotasRecuperacion(idHorario , idFormatoNota).subscribe({
+    next : (result: any[]) => {
+      if (result.length > 0) {
+        const notaEjemplo = result[0];
+        // Obtén todas las claves de notas, ignorando cualquier variante de finalGrade
+        let columns = Object.keys(notaEjemplo.notas || {}).filter(
+          c => c.toLowerCase() !== 'finalgrade'
+        );
+        // Si finalGrade existe en el objeto principal, agrégalo al final
+        if ('finalGrade' in notaEjemplo) {
+          columns.push('finalGrade');
+        }
+        this.displayedColumnsRecuperacion = ['alumno', ...columns];
+        this.tableColumns = ['index', ...this.displayedColumnsRecuperacion]; 
+        this.dataSourceRecuperacion.data = result.map(n => ({
+          ...n,
+          ...n.notas
+        }))
+      } else {
+        this.displayedColumnsRecuperacion = [];
+        this.dataSourceRecuperacion.data = [];
       }
     }
   })
@@ -137,7 +170,7 @@ validarNota(row: any, col: string, colIndex: number): void {
     return; // No guardar si no es válido
   } else if (valor > max) {
     this.snack.open(`El valor no puede ser mayor que ${max}` , null , {
-      duration: 2000,
+      duration: 3000,
       panelClass: ['snack-error'],
       horizontalPosition: 'center',
       verticalPosition: 'top'
@@ -196,8 +229,11 @@ validarNota(row: any, col: string, colIndex: number): void {
             });
           }
         }
+        }, error: (error) => {        
+         nota[col] = ''; 
         }
-      });
+      });  
+      
     } else {
       this.notasService.actualizarNota(notaDto).subscribe({
         next: () => {
@@ -206,6 +242,8 @@ validarNota(row: any, col: string, colIndex: number): void {
                 duration: 2000,   
                 panelClass: ['snack-success'],        
             });
+        }, error: (error) => {
+          nota[col] = ''; // Limpia el campo si hay error
         }
       });
     }
@@ -277,4 +315,71 @@ confirmarCerrarActa() {
   }
   return false; // No hay notas vacías
 }
+
+ guardarNotaRecuperacion(nota: any, colindex: number, col:any) {
+    const notaDto = {
+      ...nota,
+      NombreColumna: this.getNombreColumnaReal(col),
+      valor: nota[col],
+      idPeriodo: this.turno.idPeriodo,
+    };
+    if (nota.idNota == 0) {
+      this.notasService.guardarNota(notaDto).subscribe({
+        next: (result: any) => {
+          if (result) {
+            let index = this.dataSourceRecuperacion.data.findIndex((n) => n.idRegistro == notaDto.idRegistro);
+            if (index == -1) {
+              this.dataSourceRecuperacion.data.push(result);
+              this.dataSourceRecuperacion._updateChangeSubscription();
+              this.snack.open('Nota guardada', 'Cerrar', {
+                panelClass: ['snack-success'],
+                duration: 2000,           
+            });
+            } else {
+              this.dataSourceRecuperacion.data[index].idNota = result.idNota;
+              this.calcularPromedio(result);
+              this.dataSourceRecuperacion._updateChangeSubscription();
+              this.snack.open('Nota guardada', 'Cerrar', {
+                panelClass: ['snack-success'],
+                duration: 2000,           
+            });
+          }
+        }
+        }
+      });
+    } else {
+      this.notasService.actualizarNota(notaDto).subscribe({
+        next: () => {
+          this.calcularPromedio(notaDto);
+             this.snack.open('Nota guardada', 'Cerrar', {
+                duration: 2000,   
+                panelClass: ['snack-success'],        
+            });
+        }
+      });
+    }
+  }
+
+  validarNotaRecuperacion(row: any, col: string, colIndex: number): void {
+  const max = this.getValorMaximo(col);
+  const valor = Number(row[col]);
+  if (isNaN(valor) || valor < 0) {
+    row[col] = '';
+    return; // No guardar si no es válido
+  } else if (valor > max) {
+    this.snack.open(`El valor no puede ser mayor que ${max}` , null , {
+      duration: 2000,
+      panelClass: ['snack-error'],
+      horizontalPosition: 'center',
+      verticalPosition: 'top'
+    });
+    row[col] = '';
+    this.guardarNotaRecuperacion(row, colIndex , col);
+    return; // No guardar si no es válido
+  }
+  // Si pasa la validación, guardar
+  this.guardarNotaRecuperacion(row, colIndex , col);
+}
+
+
 }

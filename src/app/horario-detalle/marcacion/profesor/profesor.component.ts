@@ -14,6 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { CalendarSchedulerEvent } from 'angular-calendar-scheduler';
+import { ConfigService } from '../../../_services/config.service';
 
 @Component({
   selector: 'app-profesor',
@@ -40,14 +41,20 @@ export class ProfesorComponent {
   private fb = inject(FormBuilder);
   aula = 'Intranet Docentes';
   snakBar = inject(MatSnackBar);
+  aulaService  = inject(ConfigService);
   profesor: Profesor = JSON.parse(localStorage.getItem('profesor')!);
   asistenciaForm!: FormGroup;
   mostrarrefresh = true;
   ngOnInit(): void {
     this.obtenerHorario();
-    this.initializeForm();
+   this.getAula();
   }
   
+    async getAula() {
+    await this.aulaService.loadAula();
+    this.aula = this.aulaService.getAula();
+    this.initializeForm();
+  }
 
   initializeForm() {
     this.asistenciaForm = this.fb.group({
@@ -68,7 +75,7 @@ export class ProfesorComponent {
       idProfesor: [this.profesor.idProfesor],
       profesor: [{ value: '', disabled: true }],
       descripcion: [{ value: '', disabled: true }],
-      insertApplicationName: this.aula,
+      insertApplicationName: this.aula == null ? 'Intranet Docentes' : this.aula ,
       horaEntrada: [],
       horaSalida: [],
       modalidad: [''],

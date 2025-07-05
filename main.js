@@ -1,17 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const fs = require("fs");
 const path = require("path");
-const { autoUpdater } = require("electron-updater");
-const log = require("electron-log");
-
-autoUpdater.logger = log;
-autoUpdater.logger.transports.file.level = "info";
-
-app.whenReady().then(() => {
-  // Comprobar actualizaciones al iniciar
-  autoUpdater.checkForUpdatesAndNotify();
-});
-
 
 let configWindow;
 let appWin;
@@ -91,24 +80,24 @@ app.whenReady().then(() => {
   }
 });
 
-autoUpdater.on("update-available", () => {
-  dialog.showMessageBox({
-    type: "info",
-    title: "Actualización disponible",
-    message: "Hay una nueva versión disponible. Se descargará en segundo plano.",
-  });
-});
+// autoUpdater.on("update-available", () => {
+//   dialog.showMessageBox({
+//     type: "info",
+//     title: "Actualización disponible",
+//     message: "Hay una nueva versión disponible. Se descargará en segundo plano.",
+//   });
+// });
 
-autoUpdater.on("update-downloaded", () => {
-  dialog.showMessageBox({
-    type: "info",
-    title: "Actualización lista",
-    message: "La nueva versión ha sido descargada. ¿Deseas reiniciar ahora?",
-    buttons: ["Sí", "Después"]
-  }).then(result => {
-    if (result.response === 0) autoUpdater.quitAndInstall();
-  });
-});
+// autoUpdater.on("update-downloaded", () => {
+//   dialog.showMessageBox({
+//     type: "info",
+//     title: "Actualización lista",
+//     message: "La nueva versión ha sido descargada. ¿Deseas reiniciar ahora?",
+//     buttons: ["Sí", "Después"]
+//   }).then(result => {
+//     if (result.response === 0) autoUpdater.quitAndInstall();
+//   });
+// });
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {

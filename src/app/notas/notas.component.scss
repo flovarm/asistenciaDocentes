@@ -49,6 +49,10 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+.is-invalid {
+  border: 2px solid #bf0604 !important;
+}
+
 .notaMinima {
   background-color: var(--mat-sys-tertiary-container);
   color: var(--mat-sys-on-tertiary-container);

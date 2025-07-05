@@ -74,8 +74,8 @@ body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
    @include mat.form-field-overrides((
-    outlined-disabled-input-text-color: black,
-    outlined-disabled-label-text-color: blue,
+    outlined-disabled-input-text-color: var(--mat-sys-on-surface),
+    outlined-disabled-label-text-color: var(--mat-sys-primary),
   ));
 }
 
