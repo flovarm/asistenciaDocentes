@@ -38,4 +38,8 @@ export class NavbarComponent {
   onToggleSidenav() {
     this.toggleSidenav.emit();
   }
+
+   isDarkTheme(): boolean {
+  return this.themeService.selectedTheme()?.name === 'dark';
+}
 }

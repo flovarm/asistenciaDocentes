@@ -47,32 +47,88 @@
   }
         </div>
     </div>
+    
+    <!-- Botones para marcar todos los valores de la fecha actual -->
+    @if (dataSource.data.length > 0 && existeFechaActual()) {
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="bulk-action-buttons d-flex align-items-center gap-2 flex-wrap">
+                <span class="fw-bold">Marcar todos para la fecha actual @if(getCurrentDateColumn()) {({{ getCurrentDateColumn() | date:'dd/MM/yyyy' }})}:</span>
+                <button mat-stroked-button color="primary" (click)="marcarTodosParaFechaActual('P')" 
+                        [disabled]="turno?.registroCerrado">
+                    <mat-icon>check_circle</mat-icon> Todos Presentes
+                </button>
+                <button mat-stroked-button color="accent" (click)="marcarTodosParaFechaActual('T')" 
+                        [disabled]="turno?.registroCerrado">
+                    <mat-icon>schedule</mat-icon> Todos Tardanza
+                </button>
+                <button mat-stroked-button color="warn" (click)="marcarTodosParaFechaActual('A')" 
+                        [disabled]="turno?.registroCerrado">
+                    <mat-icon>cancel</mat-icon> Todos Falta
+                </button>
+            </div>
+        </div>
+    </div>
+    }
     <div>
         <div class="row">
-            <div class="col-12" style="overflow-x: auto;">
-                <table mat-table [dataSource]="dataSource" class="table-EC" matSort>
+            <div class="col-12">
+                <div class="table-container">
+                    <table mat-table [dataSource]="dataSource" class="table-EC sticky-header" matSort>
 
-                     <!-- Columna de numeración -->
-                    <ng-container matColumnDef="index">
-                        <th mat-header-cell *matHeaderCellDef>#</th>
-                        <td mat-cell *matCellDef="let row; let i = index">{{ i + 1 }}</td>
-                    </ng-container>
+                         <!-- Columna de numeración -->
+                        <ng-container matColumnDef="index">
+                            <th mat-header-cell *matHeaderCellDef class="sticky-header-cell index-col">#</th>
+                            <td mat-cell *matCellDef="let row; let i = index" class="sticky-cell index-col">{{ i + 1 }}</td>
+                        </ng-container>
                     <!-- Columnas dinámicas -->
                     @for (column of displayedColumns; track $index) {
                     <ng-container [matColumnDef]="column" [sticky]="column === 'alumno'">
-                        <th mat-header-cell *matHeaderCellDef [class.alumno-col]="column === 'alumno'">
+                        <th mat-header-cell *matHeaderCellDef [class.alumno-col]="column === 'alumno'" class="sticky-header-cell">
                             @if (isDateColumn(column)) {
                             
                             {{ column | date:'MM/dd' }}
                             
                             } @else if (column === 'alumno') {
-                            <!-- Puedes poner aquí el título de la columna alumno si lo deseas -->
+                            Alumno
                             } @else {
                             {{ column | titlecase }}
                             }
                         </th>
-                        <td mat-cell *matCellDef="let row" [class.alumno-col]="column === 'alumno'">
-                            @if (column !== 'alumno' && column !== 'idAlumno') {
+                      <td mat-cell *matCellDef="let row" [class.alumno-col]="column === 'alumno'">
+                            @if (column === 'alumno') {
+                                <div class="d-flex align-items-center">
+                                    <span>{{ row[column] }}</span>
+                                    @if (row.tieneRecuperaciones) {
+                                        @for (recuperacion of row.recuperaciones; track $index) {
+                                            @if (recuperacion.estado === 'P') {
+                                              @if (recuperacion.estado === 'P') {
+                                                <mat-icon 
+                                                    class="ms-1" 
+                                                    [matTooltip]="'Recuperación: ' + (recuperacion.fechaRecuperacion | date:'dd-MM-yyyy') + ' - Presente'"
+                                                    style="font-size: 16px; color: #198754;">
+                                                    check_circle
+                                                </mat-icon>
+                                            } @else if (recuperacion.estado === 'T') {
+                                                <mat-icon 
+                                                    class="ms-1" 
+                                                    [matTooltip]="'Recuperación: ' + (recuperacion.fechaRecuperacion | date:'dd-MM-yyyy') + ' - Tardanza'"
+                                                    style="font-size: 16px; color: #ffc107;">
+                                                    schedule
+                                                </mat-icon>
+                                            } @else if (recuperacion.estado === 'A') {
+                                                <mat-icon 
+                                                    class="ms-1" 
+                                                    [matTooltip]="'Recuperación: ' + (recuperacion.fechaRecuperacion | date:'dd-MM-yyyy') + ' - Falta'"
+                                                    style="font-size: 16px; color: #dc3545;">
+                                                    cancel
+                                                </mat-icon>
+                                            }
+                                        }
+                                        }
+                                    }
+                                </div>
+                            } @else if (column !== 'idAlumno') {
                             @if (isEditableDate(column)) {
                                                     <select class="form-select form-select-sm d-flex justify-content-center"
                                 style="width: 70px;" name="column" [(ngModel)]="row[column]" [disabled]="turno?.registroCerrado">
@@ -80,7 +136,6 @@
                                 <option value="T">⏰</option>
                                 <option value="A">❌</option>
                             </select>
-                            } @else if (column === 'alumno') {
                             } @else if (row[column] === 'P') {
                             <button mat-icon-button matTooltip="Presente">
                                 <mat-icon style="color: #198754;">check_circle</mat-icon>
@@ -94,17 +149,16 @@
                                 <mat-icon style="color: #dc3545;">cancel</mat-icon>
                             </button>
                             }
-                            } @else {
-                            {{ row[column] }}
                             }
                         </td>
                     </ng-container>
 
                     }
 
-                    <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+                    <tr mat-header-row *matHeaderRowDef="tableColumns" class="sticky-header-row"></tr>
                     <tr mat-row *matRowDef="let row; columns: tableColumns;"></tr>
                 </table>
+                </div>
 
                 <mat-paginator [pageSizeOptions]="[25, 50 , 100]" aria-label="Select page of users"></mat-paginator>
 
@@ -113,7 +167,7 @@
     </div>
     @if(dataSource.data.length >  0) {
         <mat-card-actions class="d-flex justify-content-center" >
-            <button mat-flat-button (click)="guardarAsistencia()"><mat-icon>save</mat-icon> Guardar Asistencia</button>
+            <button mat-raised-button (click)="guardarAsistencia()"><mat-icon>save</mat-icon> Guardar Asistencia</button>
         </mat-card-actions>
 
     }
@@ -158,8 +212,8 @@
   <tr mat-row *matRowDef="let row; columns: displayedColumnsRecuperacion;"></tr>
 </table>
  <mat-card-actions class="d-flex justify-content-center" >
-            <button mat-flat-button (click)="guardarRecuperado()"><mat-icon>save</mat-icon> Guardar Asistencia de Recuperados</button>
+            <button mat-raised-button (click)="guardarRecuperado()"><mat-icon>save</mat-icon> Guardar Asistencia de Recuperados</button>
         </mat-card-actions>
 </mat-card>
 }
-  
+

@@ -68,15 +68,27 @@ font-face {
 html,
 body {
   height: 100%;
-  
+   @include mat.form-field-overrides((
+    outlined-disabled-input-text-color: var(--mat-sys-on-surface),
+    outlined-disabled-label-text-color: var(--mat-sys-primary)
+  ));
+  @include mat.card-overrides((
+   subtitle-text-color: var(--mat-sys-primary),
+   elevated-container-color: var(--mat-background),
+  ));
+
+  @include mat.expansion-overrides((
+    actions-divider-color: var(--mat-background),
+    container-background-color: var(--mat-sys-surface),
+    container-text-color: var(--mat-sys-primary),
+  ));
+
+@include mat.tabs-overrides(( background-color: var(--mat-sys-primary), active-hover-indicator-color:var(--mat-sys-primary) ));
 }
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
-   @include mat.form-field-overrides((
-    outlined-disabled-input-text-color: var(--mat-sys-on-surface),
-    outlined-disabled-label-text-color: var(--mat-sys-primary),
-  ));
+  
 }
 
 @import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
@@ -92,20 +104,27 @@ p {
 
 .tabla-EC{
   @include mat.table-overrides((
-    background-color: var(--mat-sys-on-outline),
-     row-item-container-height: '2px'
+     background-color: var(--mat-sys-container),
+     row-item-container-height: '40px'
   ));
 }
 
   .mat-mdc-header-cell {
-    background-color:#003384 !important;
-    color: white!important;
+    background-color:var(--mat-sys-primary) !important;
+    color:var(--mat-sys-on-primary)!important;
+    height: 25px;
   }
+
+   @include mat.sort-overrides((
+    arrow-color: var(--mat-sys-on-primary),
+  ));
 
 .mat-mdc-form-field {
  width: 100%;
 
 }
+
+
 
 @include mat.form-field-overrides((
   filled-container-color: var(--mat-sys-inverse-on-surface),
@@ -120,11 +139,7 @@ p {
 ));
 
 
-@include mat.card-overrides((
-  
-  ));
 
-@include mat.tabs-overrides(( background-color: var(--mat-sys-primary), active-hover-indicator-color:var(--mat-sys-primary) ));
 
 
   .cal-scheduler-time-segment {
@@ -147,17 +162,22 @@ p {
 
   .cal-scheduler-time-segment{
     background-color: var(--mat-sys-surface);
-    color:  var(--mat-sys-on-surface);
+    color:  var(--mat-sys-primary);
   }
 
   .cal-scheduler-hour-segments
   {
     background-color: var(--mat-sys-surface) !important;
-    color:  var(--mat-sys-on-surface) !important;
+    color:  var(--mat-sys-on-primary) !important;
   }
   .cal-scheduler-event-title {
     color: var(--mat-sys-surface-container-lowest);
   }
+
+  .cal-scheduler-view .cal-scheduler-headers .cal-header:hover {
+    background-color: var(--mat-sys-on-container) !important;
+}
+
   .cal-scheduler-event-content {
     color: var(--mat-sys-surface-container-lowest);
   }
@@ -172,10 +192,53 @@ p {
   }
 
 .cal-scheduler-view .cal-scheduler-headers .cal-header.cal-today {
-  background-color: var(--mat-sys-primary) !important;
-  color: var(--mat-sys-on-primary) !important;
+  background-color: var(--mat-sys-tertiary-container) !important;
+  color: var(--mat-sys-on-tertiary-container) !important;
 }
 
+.cal-scheduler-view .cal-scheduler-headers .cal-header.cal{
+  color: var(mat-sys-on-primary) !important;
+}
+
+.cal-scheduler-view .cal-scheduler .cal-scheduler-cols:not(.cal-resize-active) .cal-scheduler-hour-segment:hover {
+     background-color: var(--mat-sys-on-container) !important;
+}
+
+.cal-scheduler-view .cal-scheduler-headers .cal-header.cal-weekend span {
+    color: var(--mat-sys-error) !important;
+}
+
+.cal-scheduler-view .cal-scheduler .cal-scheduler-cols {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex
+;
+    -webkit-flex-flow: row wrap;
+    flex-flow: row wrap;
+    border-top: 1px solid #e1e1e1;
+}
+
+// .cal-scheduler-view .cal-scheduler .cal-scheduler-cols .cal-scheduler-col {
+//     display: -webkit-box;
+//     display: -moz-box;
+//     display: -ms-flexbox;
+//     display: flex
+// ;
+//     -webkit-flex-flow: column wrap;
+//     flex-flow: column wrap;
+//     flex: 1 0;
+//     position: relative;
+//     border-right: 1px solid var(--mat-sys-on-surface) !important;
+// }
+
+.cal-scheduler-col{
+
+}
+@include mat.form-field-overrides((
+  filled-container-color: var(--mat-sys-inverse-on-surface),
+  filled-focus-active-indicator-color: var(--mat-sys-primary),
+));
 
 .fila-green {
   @include mat.table-overrides((
@@ -187,12 +250,6 @@ p {
   @include mat.table-overrides((
     row-item-outline-color: var(--mat-sys-tertiary),
     row-item-label-text-color: var(--mat-sys-tertiary)
-  ));
-}
-
-.table {
-  @include mat.table-overrides((
-   
   ));
 }
 
@@ -212,6 +269,7 @@ textarea{
     supporting-text-color: var(--mat-sys-on-error)
   ));
 }
+
 
 
 // // Tema claro (default)

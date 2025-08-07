@@ -10,25 +10,26 @@
     height: 91%;
       @include mat.sidenav-overrides((
           container-width: 250px,
-          container-background-color: var(--mat-sys-surface-container-highest),
-          container-text-color: var(--mat-sys-tertiary),
+          container-background-color: var(--mat-sys-surface),
+          container-text-color: var(--mat-sys-primary),
       ));
   }
 
   .mat-list-group {
     @include mat.list-overrides((
-        list-item-selected-container-color: #003384,
+        list-item-selected-container-color: var(--mat-sys-tertiary),
   ));
   }
 .mat-list-item {
     @include mat.list-overrides((
-      active-indicator-color: orange,
+      active-indicator-color: var(--mat-sys-primary),
+      list-item-label-text-size: 15px
     ));
 }
  
  .sidenav {
     height: 100%;
-    width: 250px;
+    width: 230px;
   transition: width 0.3s;
   overflow-y: auto; /* Habilita el desplazamiento vertical */
   }
@@ -52,15 +53,36 @@
     overflow: hidden;
   }
 
+  .divider {
+  @include mat.divider-overrides((
+    color: var(--mat-sys-surface-container),
+  ));
+}
+
   .active {
     font-weight: bold;
-    color: white;
+    // color: var(--mat-sys-on-primary);
 
     @include mat.list-overrides((
-      list-item-label-text-color: white,
-        list-item-container-color: #003384,
-        list-item-leading-icon-color: white,
-        list-item-hover-label-text-color: white,
-        list-item-focus-label-text-color: white,
+       list-item-label-text-color: var(--mat-sys-primary),
+         list-item-container-color: var(--mat-sys-surface-container-high),
+         list-item-leading-icon-color:var(--mat-sys-primary),
+          list-item-hover-label-text-color:var(--mat-sys-primary),
+         list-item-focus-label-text-color:var(--mat-sys-primary),
     ));
   }
+
+  .mat-sidenav-content, 
+.container-fluid {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.container-fluid {
+  flex: 1;
+}
+
+footer {
+  margin-top: auto;
+}

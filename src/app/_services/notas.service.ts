@@ -22,6 +22,11 @@ import { environment } from "../../environments/environment.development";
     guardarNota(nota: any) {
         return this.http.post(this.apiUrl, nota);
     }
+    
+    guardarNotasMasivo(notas: any[]) {
+        return this.http.post(this.apiUrl + 'bulk', notas);
+    }
+    
     calcularPromedio(idNota: number, idFormatoNota: number) {
         return this.http.get(this.apiUrl + 'Promedio/' + idNota + '/' + idFormatoNota);
     }

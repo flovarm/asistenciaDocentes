@@ -141,13 +141,13 @@ export class ReemplazoComponent {
 
   salida() {
     let objsalida = Object.assign({} , this.asistenciaForm.getRawValue());
-      if (objsalida.modalidad == 'Presencial')
-    {
-      this.snakBar.open('Es un horario presencial debes hacerlo desde la aplicación de escritorio' , 'OK' ,  {
-         verticalPosition: 'top',
-        panelClass: ['snack-error']
-      });
-    }else {
+    //   if (objsalida.modalidad == 'Presencial')
+    // {
+    //   this.snakBar.open('Es un horario presencial debes hacerlo desde la aplicación de escritorio' , 'OK' ,  {
+    //      verticalPosition: 'top',
+    //     panelClass: ['snack-error']
+    //   });
+    // }else {
 
     
       this.asistenciaDocenteService.SalidaReemplazo(objsalida).subscribe(() => {
@@ -159,7 +159,7 @@ export class ReemplazoComponent {
           this.mostrarrefresh = false;
           this.obtenerHorario();
         })
-  }
+  //}
 }
 
 }

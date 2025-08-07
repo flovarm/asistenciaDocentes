@@ -89,14 +89,10 @@ displayedColumnsRecuperacion: string[] = ['numero','alumno', 'accion'];
     });
   }
 
-  listarAsistencia(idHorario: number) {
+ listarAsistencia(idHorario: number) {
     this.asistenciaAlumnoService.ObtenerLista(idHorario).subscribe({
       next: (datos: any[]) => {
-        // if (!datos || datos.length === 0) {
-        //   this.displayedColumns = [];
-        //   this.dataSource.data = [];
-        //   return;
-        // }
+        console.log('Datos de asistencia:', datos);
         const fechasSet = new Set<string>();
         datos.forEach(d => {
           Object.keys(d.asistenciasPorFecha || {}).forEach(f => fechasSet.add(f));
@@ -111,24 +107,31 @@ displayedColumnsRecuperacion: string[] = ['numero','alumno', 'accion'];
             acc[fecha] = (fecha === today)
               ? (d.asistenciasPorFecha?.[fecha] && d.asistenciasPorFecha[fecha] !== '')
                 ? d.asistenciasPorFecha[fecha]
-                : 'P'
+                : ''
               : (d.asistenciasPorFecha?.[fecha] ?? '');
             return acc;
           }, {} as Record<string, string>);
+          
+          // Agregar recuperaciones al modelo
+          const recuperaciones = d.recuperaciones || [];
+          const recuperacionesTooltip = recuperaciones.map((rec: any) => rec.fecha).join(', ');
+          
           return {
             alumno: d.alumno,
             idAlumno: d.idAlumno,
             idHorario: d.idHorario,
+            recuperaciones: recuperaciones,
+            recuperacionesTooltip: recuperacionesTooltip,
+            tieneRecuperaciones: recuperaciones.length > 0,
             ...asistencia
           };
         });
 
         this.displayedColumns = ['alumno', ...fechas];
-         this.tableColumns = ['index', ...this.displayedColumns]; 
+        this.tableColumns = ['index', ...this.displayedColumns]; 
         this.dataSource = new MatTableDataSource<any>(adaptados);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-        this.listarRecuperacionClase();
       },
       error: (error) => {
         console.error('Error al listar asistencia:', error);
@@ -219,7 +222,6 @@ isEditableDate(column: string): boolean {
         });
   });
 
-  console.log(asistencias)
   this.asistenciaAlumnoService.GuardarAsistencias(asistencias).subscribe({
     next: () => {
       this.snack.open('Asistencias guardadas', 'Cerrar', { duration: 3000, panelClass: ['snack-success'] }),
@@ -233,5 +235,103 @@ isEditableDate(column: string): boolean {
   const mes = String(date.getMonth() + 1).padStart(2, '0');
   const dia = String(date.getDate()).padStart(2, '0');
   return `${mes}/${dia}`;
+}
+
+/**
+ * Obtiene la columna correspondiente a la fecha actual
+ */
+getCurrentDateColumn(): string | null {
+  const today = this.getTodayString();
+  
+  // Buscar fecha exacta
+  let fechaActual = this.displayedColumns.find(col => this.isDateColumn(col) && col === today);
+  
+  if (fechaActual) {
+    return fechaActual;
+  }
+  
+  // Si no encuentra fecha exacta, buscar fechas editables (de hoy o anteriores)
+  const fechasEditables = this.displayedColumns.filter(col => this.isDateColumn(col) && this.isEditableDate(col));
+  
+  if (fechasEditables.length > 0) {
+    // Buscar la fecha más reciente entre las editables
+    const fechasOrdenadas = fechasEditables.sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+    return fechasOrdenadas[0];
+  }
+  
+  return null;
+}
+
+/**
+ * Verifica si hay fechas editables disponibles (para mostrar los botones de selección masiva)
+ */
+hasFechasEditables(): boolean {
+  return this.displayedColumns.some(col => this.isDateColumn(col) && this.isEditableDate(col));
+}
+
+/**
+ * Verifica si existe específicamente la fecha actual en las columnas disponibles
+ */
+existeFechaActual(): boolean {
+  const today = this.getTodayString();
+  return this.displayedColumns.some(col => this.isDateColumn(col) && col === today);
+}
+
+/**
+ * Hace scroll horizontal hacia la última fecha de asistencia
+ */
+scrollToLastDate(): void {
+  setTimeout(() => {
+    const tableContainer = document.querySelector('.table-container') as HTMLElement;
+    if (tableContainer) {
+      // Scroll hasta el final (derecha) del contenedor para mostrar las fechas más recientes
+      const maxScrollLeft = tableContainer.scrollWidth - tableContainer.clientWidth;
+      
+      // Si hay scroll behavior smooth en CSS, usar scrollTo, sino usar scrollLeft directo
+      if (tableContainer.style.scrollBehavior === 'smooth' || 
+          getComputedStyle(tableContainer).scrollBehavior === 'smooth') {
+        tableContainer.scrollTo({
+          left: maxScrollLeft,
+          behavior: 'smooth'
+        });
+      } else {
+        tableContainer.scrollLeft = maxScrollLeft;
+      }
+    }
+  }, 300); // Delay aumentado para asegurar que la tabla se haya renderizado completamente
+}
+
+/**
+ * Marca todos los alumnos con el estado especificado para la fecha actual
+ */
+marcarTodosParaFechaActual(estado: 'P' | 'T' | 'A'): void {
+  const fechaActual = this.getCurrentDateColumn();
+  
+  if (!fechaActual) {
+    this.snack.open('No se encontró ninguna fecha editable', 'Cerrar', { 
+      duration: 3000, 
+      panelClass: ['snack-error'] 
+    });
+    return;
+  }
+
+  // Actualizar todos los registros con el estado seleccionado para la fecha actual
+  const datosActualizados = this.dataSource.data.map(row => ({
+    ...row,
+    [fechaActual]: estado
+  }));
+
+  this.dataSource.data = datosActualizados;
+  
+  // Activar la advertencia para recordar guardar
+  this.advertenciaAsistencia = true;
+  
+  // Mostrar mensaje de confirmación
+  const estadoTexto = estado === 'P' ? 'Presente' : estado === 'T' ? 'Tardanza' : 'Falta';
+  const fechaFormateada = new Date(fechaActual).toLocaleDateString('es-ES');
+  // this.snack.open(`Todos los alumnos marcados como: ${estadoTexto} para ${fechaFormateada}`, 'Cerrar', { 
+  //   duration: 3000, 
+  //   panelClass: ['snack-success'] 
+  // });
 }
 }

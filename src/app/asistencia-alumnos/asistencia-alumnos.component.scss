@@ -14,6 +14,7 @@
    row-item-container-height: '40px',
   ));
 }
+
 .advertencia{
    background-color: var(--mat-sys-tertiary-container);
   color: var(--mat-sys-on-tertiary-container);
@@ -22,4 +23,113 @@
 .registro-asistencia  {
  background-color: var(--mat-sys-tertiary-container);
   color: var(--mat-sys-on-tertiary-container);
+}
+
+// Estilos para los botones de selección masiva
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.bulk-action-buttons {
+  padding: 1rem;
+  background-color: var(--mat-sys-surface-variant);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+
+  .fw-bold {
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+  }
+
+  button {
+    margin-left: 0.5rem;
+    
+    &:first-of-type {
+      margin-left: 0;
+    }
+  }
+}
+
+// Estilos para tabla con header sticky y scroll
+.table-container {
+  max-height: 60vh; // Altura máxima del contenedor
+  overflow-y: auto; // Scroll vertical cuando sea necesario
+  overflow-x: auto; // Scroll horizontal para contenido ancho
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 8px;
+  position: relative;
+  scroll-behavior: smooth; // Scroll suave
+
+  .sticky-header {
+    position: relative;
+  }
+
+  .sticky-header-cell {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-bottom: 2px solid var(--mat-sys-primary) !important;
+  }
+
+  .sticky-header-row {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  // Asegurar que las celdas sticky de la columna alumno funcionen correctamente
+  .alumno-col.sticky-header-cell {
+    left: 0;
+    z-index: 11; // Mayor z-index para la columna sticky lateral
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  // Celdas del cuerpo también sticky para la columna alumno
+  .sticky-cell {
+    position: sticky;
+    left: 0;
+    background-color: var(--mat-sys-surface) !important;
+    z-index: 5;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+    border-right: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  // Estilos específicos para la columna de índice
+  .index-col {
+    width: 60px;
+    min-width: 60px;
+    max-width: 60px;
+    text-align: center;
+    
+    &.sticky-header-cell {
+      left: 0;
+      z-index: 12; // Más alto que la columna alumno
+    }
+    
+    &.sticky-cell {
+      left: 0;
+      z-index: 6; // Más alto que la columna alumno
+    }
+  }
+
+  // Ajustar posición de la columna alumno para que esté después del índice
+  .alumno-col {
+    &.sticky-header-cell {
+      left: 60px; // Ancho de la columna de índice
+      z-index: 11;
+    }
+    
+    &.sticky-cell {
+      left: 60px; // Ancho de la columna de índice
+      z-index: 5;
+    }
+  }
+}
+
+// Responsive: ajustar altura en pantallas pequeñas
+@media (max-width: 768px) {
+  .table-container {
+    max-height: 50vh;
+  }
 }

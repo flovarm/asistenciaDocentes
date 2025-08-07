@@ -11,16 +11,16 @@
     <div class="row justify-content-between">
       <div class="col-12 col-md-6 col-xl-6 mt-3">
         <div class="text-left">
-          <button mat-raised-button mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate" [daysInWeek]="viewDays"
+           <button mat-icon-button mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate" [daysInWeek]="viewDays"
                   [excludeDays]="excludeDays" [disabled]="prevBtnDisabled" (viewDateChange)="dateOrViewChanged()">
-            <mat-icon fontIcon="chevron_left"></mat-icon> ANTERIOR
+            <mat-icon fontIcon="chevron_left"></mat-icon> 
           </button>
-          <button mat-raised-button mwlCalendarToday [(viewDate)]="viewDate" (viewDateChange)="dateOrViewChanged()">
-            <mat-icon fontIcon="event"></mat-icon> HOY
+          <button mat-icon-button mwlCalendarToday [(viewDate)]="viewDate" (viewDateChange)="dateOrViewChanged()">
+            <mat-icon fontIcon="event"></mat-icon> 
           </button>
-          <button mat-raised-button mwlCalendarNextView [view]="view" [(viewDate)]="viewDate" [daysInWeek]="viewDays"
+          <button mat-icon-button mwlCalendarNextView [view]="view" [(viewDate)]="viewDate" [daysInWeek]="viewDays"
                   [excludeDays]="excludeDays" [disabled]="nextBtnDisabled" (viewDateChange)="dateOrViewChanged()">
-            <mat-icon fontIcon="chevron_right"></mat-icon> SIGUIENTE
+            <mat-icon fontIcon="chevron_right"></mat-icon> 
           </button>
         </div>
 

@@ -1,16 +1,186 @@
 @use '@angular/material' as mat;
 
-
 .col-header {
-  white-space: normal; /* Permitir saltos de línea */
+  white-space: normal;
   text-align: center;
 }
 
-.table-EC{
+.table-EC {
   @include mat.table-overrides((
-   background-color: var(--mat-sys-surface),
-   row-item-container-height: '40px',
+    background-color: var(--mat-sys-surface),
+    row-item-container-height: '40px',
   ));
+}
+
+// Estilos globales para sticky headers en Angular Material
+:host ::ng-deep {
+  .mat-mdc-table {
+    .mat-mdc-header-row {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 100 !important;
+   
+    }
+    
+    .mat-mdc-header-cell {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 100 !important;
+   
+    }
+  }
+}
+
+// Estilos para tabla con header sticky y scroll
+.table-container {
+  max-height: 60vh;
+  overflow-y: auto;
+  overflow-x: auto;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 8px;
+  position: relative;
+  scroll-behavior: smooth;
+
+  table.mat-mdc-table {
+    width: 100%;
+    position: relative;
+  }
+
+  // Usar ::ng-deep para asegurar que los estilos se apliquen
+  ::ng-deep {
+    .mat-mdc-header-row,
+    mat-header-row,
+    .sticky-header-row {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 100 !important;
+     
+    }
+
+    .mat-mdc-header-cell,
+    mat-header-cell,
+    .sticky-header-cell {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 100 !important;
+     
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+      border-bottom: 1px solid var(--mat-sys-outline-variant) !important;
+    }
+
+    // Asegurar que todos los thead y elementos de cabecera sean sticky
+    thead,
+    .mat-mdc-table thead,
+    .mat-mdc-table .mat-mdc-header-row {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 100 !important;
+     
+    }
+  }
+
+  // Forzar sticky headers en todas las cabeceras
+  .sticky-header-cell {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    border-bottom: 2px solid var(--mat-sys-primary) !important;
+   
+  }
+
+  .sticky-header-row {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+   
+  }
+
+  // Asegurar que la fila de cabecera sea sticky
+  .mat-mdc-header-row,
+  mat-header-row {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+    background-color: var(--mat-sys-surface) !important;
+  }
+
+  // Forzar que todas las celdas de cabecera sean sticky
+  mat-header-cell,
+  .mat-mdc-header-cell {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  // Forzar sticky en todos los elementos de cabecera posibles
+  .mat-mdc-table thead,
+  .mat-mdc-table .mat-mdc-header-row,
+  thead tr {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+    background-color: var(--mat-sys-surface) !important;
+  }
+
+  // Evitar que el contenido se superponga
+  tbody {
+    position: relative;
+    z-index: 1;
+  }
+
+  // Celdas del cuerpo también sticky para la columna alumno
+  .sticky-cell {
+    position: sticky !important;
+    left: 0 !important;
+ 
+    z-index: 50 !important;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1) !important;
+    border-right: 1px solid var(--mat-sys-outline-variant) !important;
+  }
+
+  // Estilos específicos para la columna de índice
+  .index-col {
+    width: 60px !important;
+    min-width: 60px !important;
+    max-width: 60px !important;
+    text-align: center;
+    
+    &.sticky-header-cell {
+      left: 0 !important;
+      z-index: 120 !important;
+   
+    }
+    
+    &.sticky-cell {
+      left: 0 !important;
+      z-index: 60 !important;
+   
+    }
+  }
+
+  // Ajustar posición de la columna alumno para que esté después del índice
+  .alumno-col {
+    &.sticky-header-cell {
+      left: 60px !important;
+      z-index: 110 !important;
+   
+    }
+    
+    &.sticky-cell {
+      left: 60px !important;
+      z-index: 50 !important;
+   
+    }
+  }
+}
+
+// Responsive: ajustar altura en pantallas pequeñas
+@media (max-width: 768px) {
+  .table-container {
+    max-height: 50vh;
+  }
 }
 
 .form-nota {
@@ -26,16 +196,15 @@
   padding-left: 2px !important;
   padding-right: 2px !important;
   text-align: center;
+  display: flex;
+  justify-content: center;
 }
-
-
 
 .alumno-col {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 
 /* Quitar flechas en Chrome, Safari, Edge, Opera */
 input[type="number"]::-webkit-outer-spin-button,
@@ -47,11 +216,13 @@ input[type="number"]::-webkit-inner-spin-button {
 /* Quitar flechas en Firefox */
 input[type="number"] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 .is-invalid {
   border: 2px solid #bf0604 !important;
 }
+
 .is-valid {
   border: 2px solid green !important;
 }
@@ -69,3 +240,4 @@ input[type="number"] {
   padding-right: 2px !important;
   text-align: center;
 }
+  

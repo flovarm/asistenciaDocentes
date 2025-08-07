@@ -1,3 +1,5 @@
+
+
 @use '@angular/material' as mat;
 
 mat-toolbar {
@@ -7,23 +9,28 @@ mat-toolbar {
 
   @include mat.toolbar-overrides(
     (
-       container-background-color: #003384,
+       container-background-color: var(mat-sys-on-secondary),
       container-text-color: white,
     )
   );
 
   @include mat.icon-button-overrides(
     (
-      icon-color: white,
+      icon-color: var(--mat-sys-primary),
     )
   );
+}
+
+.large-icon-btn {
+ width: auto;
+    height: 100%;
 }
 
 .selected-theme {
   @include mat.menu-overrides(
     (
-      item-icon-color: var(--mat-sys-on-primary),
-      item-label-text-color: var(--mat-sys-on-primary),
+       item-icon-color: var(--mat-sys-on-tertary),
+       item-label-text-color: var(--mat-sys-on-tertary),
     )
   );
 }
@@ -38,7 +45,10 @@ mat-toolbar {
   left: 0;
   z-index: 2
 }
-
+.logo {
+  margin-right: 2rem;
+  width: 230px;
+}
 img[width="250"] {
   transition: width 0.2s;
 }
@@ -46,5 +56,8 @@ img[width="250"] {
 @media (max-width: 600px) {
   img[width="250"] {
     width: 200px !important;
+  }
+  .logo {
+    width: 170px;
   }
 }
