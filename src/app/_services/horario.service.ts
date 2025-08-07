@@ -30,7 +30,6 @@ import { map } from "rxjs";
     }
 
     obtenerHorario(actions: CalendarSchedulerEventAction[] ,idProfesor: number) {
-        debugger;
         return this.http.get<any[]>(this.apiUrl + 'ObtenerHorarioDocente/' + idProfesor).pipe(
             map(events => events.map(event => ({
                 id: event.id,

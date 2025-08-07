@@ -52,6 +52,9 @@ input[type="number"] {
 .is-invalid {
   border: 2px solid #bf0604 !important;
 }
+.is-valid {
+  border: 2px solid green !important;
+}
 
 .notaMinima {
   background-color: var(--mat-sys-tertiary-container);

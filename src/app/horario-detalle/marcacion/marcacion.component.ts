@@ -27,7 +27,6 @@ import { ReemplazoComponent } from './reemplazo/reemplazo.component';
     MatTabsModule,
     MatCardModule,
   ProfesorComponent,
-  ReemplazoComponent,
     MatDialogModule,
     MatButtonModule,
     CommonModule

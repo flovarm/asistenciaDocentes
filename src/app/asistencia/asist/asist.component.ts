@@ -122,12 +122,12 @@ export class AsistComponent implements OnInit{
 
   entrada() {
     let objentrada = Object.assign({} , this.asistenciaForm.getRawValue()); 
-        if (objentrada.modalidad == 'Presencial'){
-      this.snakBar.open('Es un horario presencial debes hacerlo desde la aplicación de escritorio' , 'OK' ,  {
-        verticalPosition: 'top',
-        panelClass: ['snack-error']
-      });
-    }else {
+         if (objentrada.modalidad == 'Presencial'){
+       this.snakBar.open('Es un horario presencial debes hacerlo desde la aplicación de escritorio' , 'OK' ,  {
+         verticalPosition: 'top',
+         panelClass: ['snack-error']
+       });
+     }else {
       this.asistenciaDocenteService.Entrada(objentrada).subscribe(() => {
         this.mostrarrefresh = false;
         this.snakBar.open('Se registro su entrada' , 'OK' ,  {

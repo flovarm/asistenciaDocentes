@@ -150,12 +150,12 @@ export class ReemplazoComponent {
     }else {
 
     
-        this.asistenciaDocenteService.SalidaReemplazo(objsalida).subscribe(() => {
+      this.asistenciaDocenteService.SalidaReemplazo(objsalida).subscribe(() => {
           this.snakBar.open('Se registro su salida' , 'OK' ,  {
          verticalPosition: 'bottom',
          duration: 3000,
         panelClass: ['snack-success']
-      });
+        });
           this.mostrarrefresh = false;
           this.obtenerHorario();
         })

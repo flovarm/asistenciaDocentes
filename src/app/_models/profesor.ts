@@ -13,4 +13,7 @@ export type Profesor = {
   horarioSinProfesor: boolean;
   idSede: number | null;
   token: string;
+  nombreReniec: string | null;
+  nroDoc: string | null;
+  tipodoc: string | null;
 };

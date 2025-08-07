@@ -58,7 +58,7 @@ import { TituloComponent } from '../Shared/titulo/titulo.component';
   styleUrl: './horario-detalle.component.scss'
 })
 export class HorarioDetalleComponent implements OnInit{
-CalendarView = CalendarView;
+  CalendarView = CalendarView;
   view: CalendarView = CalendarView.Week;
   viewDate: Date = new Date();
   viewDays: number = 7;
