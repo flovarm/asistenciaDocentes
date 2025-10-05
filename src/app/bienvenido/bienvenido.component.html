@@ -1,62 +1,39 @@
-<mat-card class="mt-1 mb-1" appearance="outlined">
-    <div class="col-lg-8 mx-auto p-4 py-md-5">
-        <header class="d-flex align-items-center justify-content-center pb-3 mb-5 border-bottom">
-          <a href="/" class="d-flex align-items-center text-body-emphasis text-decoration-none">
-            <img src="images/logoActual_azul.png" alt="" loading="lazy" [width]="130" priority>
-          </a>
-        </header>
-        <h1 class="text-body-emphasis ml-4">Bienvenido</h1>
-      
-        <main>
-          <p class="fs-5 col-md-8"></p>
-      
-          <div class="mb-5">
-          <h3>{{usuarioLogeado?.nombreCompleto | titlecase}}</h3>
-          </div>
-      
-          <hr class="col-3 col-md-2 mb-5">
-      
-          <div class="row g-5">
-            <div class="col-md-6">
-              <h2 class="text-body-emphasis">Mis Datos Personales</h2>
-              <p></p>
-              <ul class="list-unstyled ps-0">
-                <li>
-                    <div class="row">
-                        <div class="col-4">
-                            <strong>DNI:</strong>
-                        </div>
-                        <div class="col-8">
-                            {{usuarioLogeado?.userName}}
-                        </div>
-                    </div>
-                </li>
-                <li>
-                    <div class="row">
-                        <div class="col-4">
-                            <strong>Telefono:</strong>
-                        </div>
-                        <div class="col-8">
-                            {{usuarioLogeado?.celular}}
-                        </div>
-                    </div>
-                </li>
-                <li>
-                    <div class="row">
-                        <div class="col-4">
-                            <strong>Correo:</strong>
-                        </div>
-                        <div class="col-8">
-                            {{usuarioLogeado?.email}}
-                        </div>
-                    </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </main>
-        <footer class="pt-5 my-5 text-body-secondary border-top">
-          Created by El Cultural · © 2025
-        </footer>
+<div class="container p-5">
+  <div class="mt-5 d-flex align-items-center mb-3 h-100 justify-content-center">
+    <!-- @if (usuarioLogeado?.fotoUrl) {
+      <img [src]="usuarioLogeado.fotoUrl" alt="Foto de usuario" class="rounded-circle" width="150" height="150" style="object-fit: cover;">
+    } @else { -->
+      <div class="rounded-circle iniciales text-white d-flex align-items-center justify-content-center" >
+      {{ usuarioLogeado?.nombreCompleto | initials}}
+        
       </div>
-    </mat-card>
+    <!-- } -->
+  <div class="d-flex flex-column">
+    <span class="ms-3">
+      <h3 class="mb-0"> <strong>{{usuarioLogeado?.nombreCompleto | titlecase}}</strong> </h3>
+    </span>
+    <span class="ms-3">
+      <p class="mb-0"> Usuario: {{usuarioLogeado?.userName}}</p>
+    </span>
+  </div>
+</div>
+<div class="row mt-5 d-flex justify-content-center">
+  <div class="col-12 col-md-4">
+    <mat-divider></mat-divider>
+    <div class="d-flex flex-column align-items-start">
+      <strong class="mt-4 ml-2">Nro Celular:</strong>
+      <p class="p-0"> {{usuarioLogeado?.celular}}</p>
+    </div>
+  </div>
+  <div class="col-12 col-md-4">
+    <mat-divider ></mat-divider>
+    <div class="d-flex flex-column align-items-start" style="height: 200px;">
+      <strong class="mt-4 ml-2">Correo:</strong>
+      <p class="p-0"> {{usuarioLogeado?.email}}</p>
+    </div>
+  </div>
+</div>
+<div class="d-flex justify-content-center mt-4">
+  <button mat-flat-button (click)="abrirModalActualizar()">Actualizar datos</button>
+</div>
+

@@ -11,11 +11,13 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { routes } from './app.routes';
 import { MediaMatcher } from '@angular/cdk/layout';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 @Component({
   selector: 'app-root',
   imports: [
-   RouterOutlet
+   RouterOutlet,
+   NgxSpinnerModule
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'

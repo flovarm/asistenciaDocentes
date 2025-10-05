@@ -36,4 +36,8 @@ export class ProfesorService {
       obtenerProfesor(id: number){
         return this.http.get(this.apiUrl + id);
       }
+
+      actualizarProfesor(id: number, profesor: Profesor) {
+        return this.http.put<Profesor>(this.apiUrl + id, profesor);
+      }
 }

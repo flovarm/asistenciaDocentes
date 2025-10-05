@@ -86,6 +86,7 @@ displayedColumnsRecuperacion: string[] = ['numero','alumno', 'accion'];
     setTimeout(() => {
       this.curso = this.turno?.curso ?? '';
       this.listarAsistencia(this.turno?.idHorario);
+      this.listarRecuperacionClase();
     });
   }
 
@@ -132,10 +133,6 @@ displayedColumnsRecuperacion: string[] = ['numero','alumno', 'accion'];
         this.dataSource = new MatTableDataSource<any>(adaptados);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-      },
-      error: (error) => {
-        console.error('Error al listar asistencia:', error);
-        this.snack.open('Error al listar asistencia', 'Cerrar', { duration: 3000 });
       }
     });
   }

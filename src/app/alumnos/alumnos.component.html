@@ -1,0 +1,164 @@
+<app-titulo title="Alumnos" icon="group"></app-titulo>
+
+<mat-card class="mt-1 mb-1 p-4">
+  <mat-card-subtitle>
+    Búsqueda de Alumno
+  </mat-card-subtitle>
+  <div class="row">
+    <div class="col-12 col-md-4">
+      <mat-form-field>
+        <mat-label>Filtrar por período</mat-label>
+        <mat-select [(value)]="selectedPeriodoId" (selectionChange)="onPeriodoChange($event)">
+          <mat-option value="">Todos los períodos</mat-option>
+          @for (periodo of periodos; track periodo.idPeriodo) {
+            <mat-option [value]="periodo.idPeriodo">
+              {{periodo.descripcion}}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-12 col-md-4">
+      <mat-form-field>
+        <mat-label>Filtrar por curso</mat-label>
+        <input type="text"
+               placeholder="Seleccione un curso"
+               matInput
+               [formControl]="cursoControl"
+               [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onCursoSelected($event)">
+          @for (curso of filteredCursos | async; track curso.idCurso) {
+            <mat-option [value]="curso.descripcion" [id]="curso.idCurso">
+              {{curso.descripcion}}
+            </mat-option>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+    <div class="col-12 col-md-4">
+      <mat-form-field>
+        <mat-label>Buscar por nombre</mat-label>
+        <input matInput [(ngModel)]="nombreFiltro" (keyup.enter)="loadStudents()" placeholder="Nombre del alumno">
+      </mat-form-field>
+    </div>
+  </div>
+  
+  <div class="row mt-3">
+    <div class="col-12">
+      <button mat-raised-button (click)="clearFilters()" class="me-2">
+        <mat-icon>clear</mat-icon>
+        Limpiar Búsqueda
+      </button>
+      <button mat-flat-button  (click)="loadStudents()">
+        <mat-icon>search</mat-icon>
+        Buscar
+      </button>
+    </div>
+  </div>
+</mat-card>
+
+
+
+<mat-card class="p-4 mb-1">
+<mat-card-subtitle>Resultados de la búsqueda</mat-card-subtitle>
+  <div class="table-container">
+    <!-- Desktop Table -->
+    <div class="d-none d-md-block">
+      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-8">
+        
+        <!-- Document ID Column -->
+        <ng-container matColumnDef="docid">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>DOCUMENTO</th>
+          <td mat-cell *matCellDef="let element">{{element.docid}}</td>
+        </ng-container>
+    
+        <!-- Name Column -->
+        <ng-container matColumnDef="completo">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>NOMBRE</th>
+          <td mat-cell *matCellDef="let element">{{element.completo | titlecase}}</td>
+        </ng-container>
+    
+        <!-- Email Column -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>EMAIL</th>
+          <td mat-cell *matCellDef="let element">{{element.email}}</td>
+        </ng-container>
+    
+        <!-- Course Column -->
+        <ng-container matColumnDef="curso">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>CURSO</th>
+          <td mat-cell *matCellDef="let element">{{element.curso | titlecase}}</td>
+        </ng-container>
+        <!-- Turno Column -->
+        <ng-container matColumnDef="turno">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>TURNO</th>
+          <td mat-cell *matCellDef="let element">{{element.turno }}</td>
+        </ng-container>
+        <!-- Fecha Column -->
+        <ng-container matColumnDef="fechains">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>FECHA INSCRIPCIÓN</th>
+          <td mat-cell *matCellDef="let element">{{element.fechains | date: 'dd-MM-yyyy' }}</td>
+        </ng-container>
+    
+        <!-- Options Column -->
+        <ng-container matColumnDef="opciones">
+          <th mat-header-cell *matHeaderCellDef>OPCIONES</th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-icon-button color="primary" (click)="viewStudent(element)">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button mat-icon-button color="accent" (click)="editStudent(element)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteStudent(element)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+    
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+
+    <!-- Mobile Cards -->
+    <div class="d-block d-md-none">
+      @for (element of dataSource.data; track element.docid) {
+        <mat-card class="mb-3 p-3">
+          <mat-card-header>
+            <mat-card-title class="fs-6">{{element.completo | titlecase}}</mat-card-title>
+            <mat-card-subtitle>{{element.docid}}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content class="mt-2">
+            <div class="row">
+              <div class="col-12"><strong>Email:</strong> {{element.email}}</div>
+              <div class="col-12 mt-1"><strong>Curso:</strong> {{element.curso | titlecase}}</div>
+              <div class="col-12 mt-1"><strong>Turno:</strong> {{element.turno}}</div>
+              <div class="col-12 mt-1"><strong>Inscripción:</strong> {{element.fechains | date: 'dd-MM-yyyy'}}</div>
+            </div>
+          </mat-card-content>
+          <mat-card-actions class="text-end">
+            <button mat-icon-button color="primary" (click)="viewStudent(element)">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button mat-icon-button color="accent" (click)="editStudent(element)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteStudent(element)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+
+    <mat-paginator 
+      [length]="totalItems"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [pageSizeOptions]="[5, 10, 25, 100]"
+      (page)="onPageChange($event)"
+      showFirstLastButtons>
+    </mat-paginator>
+  </div>
+</mat-card>

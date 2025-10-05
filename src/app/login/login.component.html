@@ -1,10 +1,6 @@
-<div class="container-fluid">
-    <div class="row fondo-imagen" >
-      @if (loading.loading$ | async ) {
-        <mat-progress-bar mode="indeterminate" class="flotante"></mat-progress-bar>
-    
-    }
-        <div class="col-12">
+<div class="container-fluid fondo-imagen">
+    <div class="row " >
+        <div class="col-12 d-flex align-items-center justify-content-start min-vh-100">
             <div class="login-container">
                 <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form" aria-labelledby="login-title">
                   <h1 class="text-center title">DOCENTES</h1>

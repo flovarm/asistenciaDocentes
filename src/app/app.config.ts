@@ -11,6 +11,8 @@ import { LoadingInterceptor } from './_interceptor/loading.interceptor';
 import { MatMomentDateModule, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatDateFormats } from '@angular/material/core';
 import moment from 'moment';
+import { NgxSpinnerModule } from 'ngx-spinner';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 const MY_FORMATS: MatDateFormats = {
   parse: {
     dateInput: 'DD/MM/YYYY',
@@ -27,6 +29,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withViewTransitions()),
     provideHttpClient(withInterceptors([ErrorInterceptor,jwtInterceptor , LoadingInterceptor]) ),
+    provideNoopAnimations(),
     { provide: LOCALE_ID, useValue: 'es-PE' },
      { provide: MOMENT, useValue: moment },
     { provide: MAT_DATE_LOCALE, useValue: 'es-PE' },
@@ -38,7 +41,9 @@ export const appConfig: ApplicationConfig = {
        useFactory: adapterFactory
       }),
       SchedulerModule.forRoot({locale: 'es-PE' , headerDateFormat: 'daysRange' , logEnabled: true}),
+      NgxSpinnerModule.forRoot({ type: 'ball-scale-multiple' }),
     ),   
     importProvidersFrom(MomentDateAdapter)
   ]
 };
+

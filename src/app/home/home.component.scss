@@ -7,7 +7,7 @@
   );
 
   .mat-drawer-container{
-    height: 91%;
+    height: 87%;
       @include mat.sidenav-overrides((
           container-width: 250px,
           container-background-color: var(--mat-sys-surface),
@@ -76,12 +76,8 @@
 .container-fluid {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
 }
 
-.container-fluid {
-  flex: 1;
-}
 
 footer {
   margin-top: auto;

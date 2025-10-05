@@ -125,6 +125,11 @@ p {
 }
 
 
+.titulo {
+  font-weight: 600;
+  color: var(--mat-sys-primary);
+}
+
 
 @include mat.form-field-overrides((
   filled-container-color: var(--mat-sys-inverse-on-surface),

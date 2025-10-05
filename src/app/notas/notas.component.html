@@ -56,73 +56,153 @@
       </div>
       <div class="row d-flex justify-content-center">
         <div class="col-12">
-          <div class="table-container">
+          <!-- Desktop Table View -->
+          <div class="table-container d-none d-md-block">
             <table mat-table [dataSource]="dataSource" matSort class="table-EC sticky-header">
               <ng-container matColumnDef="index" sticky>
                 <mat-header-cell *matHeaderCellDef class="sticky-header-cell index-col">#</mat-header-cell>
                 <mat-cell *matCellDef="let row; let i = index" class="sticky-cell index-col text-center">{{ i + 1 }}</mat-cell>
               </ng-container>
 
-            @for (column of displayedColumns;let colIndex = $index; track column) {
-            <ng-container [matColumnDef]="column" [sticky]="column === 'alumno'">
+              <!-- Definir columna alumno siempre -->
+              <ng-container matColumnDef="alumno" sticky>
+                <mat-header-cell *matHeaderCellDef class="sticky-header-cell alumno-col">
+                  <div class="col-header">
+                    <small class="text-sm">Alumno</small>
+                  </div>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row" class="d-flex alumno-col sticky-cell">
+                  {{ row.alumno || 'Sin datos' }}
+                </mat-cell>
+              </ng-container>
 
-              <mat-header-cell *matHeaderCellDef class="sticky-header-cell"
-                [class.alumno-col]="column === 'alumno'"
-                [class.nota-col]="isNotaColumn(column) || column === 'finalGrade'">
-                <div class="col-header">
-                  <small class="text-sm"> {{ formatColumnNameLine1(column) | titlecase }}<br>{{
-                    formatColumnNameLine2(column) }}</small>
+              @for (column of displayedColumns;let colIndex = $index; track column) {
+                @if (column !== 'alumno') {
+                  <ng-container [matColumnDef]="column">
+                    <mat-header-cell *matHeaderCellDef class="sticky-header-cell"
+                      [class.nota-col]="isNotaColumn(column) || column === 'finalGrade'">
+                      <div class="col-header">
+                        <small class="text-sm"> {{ formatColumnNameLine1(column) | titlecase }}<br>{{
+                          formatColumnNameLine2(column) }}</small>
+                      </div>
+                    </mat-header-cell>
 
-                </div>
-              </mat-header-cell>
-
-              <mat-cell *matCellDef="let row" class="d-flex"
-                [class.alumno-col]="column === 'alumno'"
-                [class.nota-col]="isNotaColumn(column) || column === 'finalGrade'"
-                [class.sticky-cell]="column === 'alumno'">
-                @if (isNotaColumn(column)) {
-                  <input
-                        type="number"
-                        class="text-center"
-                        [(ngModel)]="row[column]"
-                        (change)="validarNota(row, column, colIndex)"
-                        [attr.max]="getValorMaximo(column)"
-                        [attr.min]="0"
-                        [disabled]="turno?.registroCerrado"
-                        [ngClass]="{
-                          'is-valid': row.estadoGuardado?.[column] === true,
-                          'is-invalid': row.estadoGuardado?.[column] === false
-                        }"
-                      />
-                } @else {
-                  @if (column === 'finalGrade') {
-                    <strong [ngClass]="{
-                        'text-success': row[column] >= turno?.notaMinima,
-                        'text-danger': row[column] < turno?.notaMinima
-                      }">
-                      {{ row[column] }}
-                    </strong>
-                  } @else {
-                    {{ row[column] }}
-                  }
+                    <mat-cell *matCellDef="let row" class="d-flex"
+                      [class.nota-col]="isNotaColumn(column) || column === 'finalGrade'">
+                      @if (isNotaColumn(column)) {
+                        <input
+                              type="number"
+                              class="text-center"
+                              [(ngModel)]="row[column]"
+                              (change)="validarNota(row, column, colIndex)"
+                              [attr.max]="getValorMaximo(column)"
+                              [attr.min]="0"
+                              [disabled]="turno?.registroCerrado"
+                              [ngClass]="{
+                                'is-valid': row.estadoGuardado?.[column] === true,
+                                'is-invalid': row.estadoGuardado?.[column] === false
+                              }"
+                            />
+                      } @else {
+                        @if (column === 'finalGrade') {
+                          <strong [ngClass]="{
+                              'text-success': row[column] >= turno?.notaMinima,
+                              'text-danger': row[column] < turno?.notaMinima
+                            }">
+                            {{ row[column] }}
+                          </strong>
+                        } @else {
+                          {{ row[column] }}
+                        }
+                      }
+                    </mat-cell>
+                  </ng-container>
                 }
-              </mat-cell>
+              }
 
-            </ng-container>
+              <mat-header-row *matHeaderRowDef="tableColumns" sticky class="sticky-header-row"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: tableColumns;"></mat-row>
+
+              <!-- Row shown when there is no matching data. -->
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="tableColumns.length">
+                  @if (input.value) {
+                    No se encontraron datos: "{{input.value}}"
+                  } @else {
+                    No hay estudiantes registrados para este turno
+                  }
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- Mobile Card View -->
+          <div class="d-block d-md-none">
+            <div class="mobile-cards-container">
+              @for (row of dataSource.filteredData; track row; let i = $index) {
+                <mat-card class="student-card mb-3">
+                  <mat-card-header>
+                    <mat-card-title class="student-name">
+                      <span class="student-number">#{{ i + 1 }}</span>
+                      {{ row.alumno || 'Sin datos' }}
+                    </mat-card-title>
+                  </mat-card-header>
+                  <mat-card-content>
+                    <div class="grades-grid">
+                      @for (column of displayedColumns; let colIndex = $index; track column) {
+                        @if (column !== 'alumno') {
+                          <div class="grade-item">
+                            <label class="grade-label">{{ formatColumnNameLine1(column) | titlecase }}</label>
+                            @if (isNotaColumn(column)) {
+                              <input
+                                type="number"
+                                class="form-control grade-input"
+                                [(ngModel)]="row[column]"
+                                (change)="validarNota(row, column, colIndex)"
+                                [attr.max]="getValorMaximo(column)"
+                                [attr.min]="0"
+                                [disabled]="turno?.registroCerrado"
+                                [ngClass]="{
+                                  'is-valid': row.estadoGuardado?.[column] === true,
+                                  'is-invalid': row.estadoGuardado?.[column] === false
+                                }"
+                              />
+                            } @else {
+                              @if (column === 'finalGrade') {
+                                <span class="final-grade" [ngClass]="{
+                                    'text-success': row[column] >= turno?.notaMinima,
+                                    'text-danger': row[column] < turno?.notaMinima
+                                  }">
+                                  {{ row[column] }}
+                                </span>
+                              } @else {
+                                <span class="grade-value">{{ row[column] }}</span>
+                              }
+                            }
+                          </div>
+                        }
+                      }
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              }
+            </div>
+
+            <!-- Mobile No Data Message -->
+            @if (dataSource.filteredData.length === 0) {
+              <mat-card class="text-center p-4">
+                <mat-card-content>
+                  @if (input.value) {
+                    No se encontraron datos: "{{input.value}}"
+                  } @else {
+                    No hay estudiantes registrados para este turno
+                  }
+                </mat-card-content>
+              </mat-card>
             }
-
-            <mat-header-row *matHeaderRowDef="tableColumns" sticky class="sticky-header-row"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: tableColumns;"></mat-row>
-
-            <!-- Row shown when there is no matching data. -->
-            <tr class="mat-row" *matNoDataRow>
-              <td class="mat-cell" colspan="10">No se encontraron datos: "{{input.value}}"</td>
-            </tr>
-          </table>
           </div>
 
           <mat-paginator [pageSizeOptions]="[50, 100 , 200]" aria-label="Select page of users"></mat-paginator>
-
         </div>
       </div>
 
@@ -141,68 +221,138 @@
   <mat-card-subtitle>Recuperación de clases</mat-card-subtitle>
   <div class="row d-flex justify-content-center">
     <div class="col-12">
-      <div class="table-container">
+      <!-- Desktop Recuperacion Table -->
+      <div class="table-container d-none d-md-block">
         <table mat-table [dataSource]="dataSourceRecuperacion" matSort class="table-EC sticky-header">
           <ng-container matColumnDef="index" sticky>
             <mat-header-cell *matHeaderCellDef class="sticky-header-cell index-col">#</mat-header-cell>
             <mat-cell *matCellDef="let row; let i = index" class="sticky-cell index-col">{{ i + 1 }}</mat-cell>
           </ng-container>
 
-        @for (column of displayedColumnsRecuperacion;let colIndex = $index; track column) {
-        <ng-container [matColumnDef]="column" [sticky]="column === 'alumno'">
+          <!-- Definir columna alumno siempre -->
+          <ng-container matColumnDef="alumno" sticky>
+            <mat-header-cell *matHeaderCellDef class="sticky-header-cell alumno-col">
+              <div class="col-header">
+                <small class="text-sm">Alumno</small>
+              </div>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" class="d-flex justify-content-center alumno-col sticky-cell">
+              {{ row.alumno || 'Sin datos' }}
+            </mat-cell>
+          </ng-container>
 
-          <mat-header-cell *matHeaderCellDef class="sticky-header-cell"
-            [class.alumno-col]="column === 'alumno'" [class.nota-col]="isNotaColumn(column) || column === 'finalGrade'">
-            <div class="col-header">
-              <small class="text-sm"> {{ formatColumnNameLine1(column) | titlecase }}<br>{{
-                formatColumnNameLine2(column) }}</small>
+          @for (column of displayedColumnsRecuperacion;let colIndex = $index; track column) {
+            @if (column !== 'alumno') {
+              <ng-container [matColumnDef]="column">
+                <mat-header-cell *matHeaderCellDef class="sticky-header-cell"
+                  [class.nota-col]="isNotaColumn(column) || column === 'finalGrade'">
+                  <div class="col-header">
+                    <small class="text-sm"> {{ formatColumnNameLine1(column) | titlecase }}<br>{{
+                      formatColumnNameLine2(column) }}</small>
+                  </div>
+                </mat-header-cell>
 
-            </div>
-          </mat-header-cell>
-
-          <mat-cell *matCellDef="let row" class="d-flex justify-content-center" 
-            [class.alumno-col]="column === 'alumno'"
-            [class.nota-col]="isNotaColumn(column) || column === 'finalGrade'" 
-            [class.sticky-cell]="column === 'alumno'">
-            @if (isNotaColumn(column)) {
-              <input 
-                class="text-center" 
-                type="number" 
-                [(ngModel)]="row[column]" 
-                [attr.max]="getValorMaximo(column)"
-                [attr.min]="0" 
-                (change)="validarNotaRecuperacion(row, column, colIndex)"
-                [disabled]="turno?.registroCerrado || row.guardando?.[column]" 
-                [ngClass]="{
-                  'is-valid': row.estadoGuardado?.[column] === true,
-                  'is-invalid': row.estadoGuardado?.[column] === false
-                }" 
-              />
-            } @else {
-              @if (column === 'finalGrade') {
-                <strong [ngClass]="{
-                  'text-success': row[column] >= turno?.notaMinima,
-                  'text-danger': row[column] < turno?.notaMinima
-                }">
-                  {{ row[column] }}
-                </strong>
-              } @else {
-                {{ row[column] }}
-              }
+                <mat-cell *matCellDef="let row" class="d-flex justify-content-center" 
+                  [class.nota-col]="isNotaColumn(column) || column === 'finalGrade'">
+                  @if (isNotaColumn(column)) {
+                    <input 
+                      class="text-center" 
+                      type="number" 
+                      [(ngModel)]="row[column]" 
+                      [attr.max]="getValorMaximo(column)"
+                      [attr.min]="0" 
+                      (change)="validarNotaRecuperacion(row, column, colIndex)"
+                      [disabled]="turno?.registroCerrado || row.guardando?.[column]" 
+                      [ngClass]="{
+                        'is-valid': row.estadoGuardado?.[column] === true,
+                        'is-invalid': row.estadoGuardado?.[column] === false
+                      }" 
+                    />
+                  } @else {
+                    @if (column === 'finalGrade') {
+                      <strong [ngClass]="{
+                        'text-success': row[column] >= turno?.notaMinima,
+                        'text-danger': row[column] < turno?.notaMinima
+                      }">
+                        {{ row[column] }}
+                      </strong>
+                    } @else {
+                      {{ row[column] }}
+                    }
+                  }
+                </mat-cell>
+              </ng-container>
             }
-          </mat-cell>
+          }
 
-        </ng-container>
+          <mat-header-row *matHeaderRowDef="tableColumns" sticky class="sticky-header-row"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: tableColumns;"></mat-row>
+
+          <!-- Row shown when there is no matching data. -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" [attr.colspan]="tableColumns.length">No hay notas de recuperación</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Mobile Recuperacion Cards -->
+      <div class="d-block d-md-none">
+        <div class="mobile-cards-container">
+          @for (row of dataSourceRecuperacion.data; track row; let i = $index) {
+            <mat-card class="student-card recovery-card mb-3">
+              <mat-card-header>
+                <mat-card-title class="student-name">
+                  <span class="student-number">#{{ i + 1 }}</span>
+                  {{ row.alumno || 'Sin datos' }}
+                </mat-card-title>
+                <mat-card-subtitle class="text-warning">Recuperación</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="grades-grid">
+                  @for (column of displayedColumnsRecuperacion; let colIndex = $index; track column) {
+                    @if (column !== 'alumno') {
+                      <div class="grade-item">
+                        <label class="grade-label">{{ formatColumnNameLine1(column) | titlecase }}</label>
+                        @if (isNotaColumn(column)) {
+                          <input 
+                            class="form-control grade-input" 
+                            type="number" 
+                            [(ngModel)]="row[column]" 
+                            [attr.max]="getValorMaximo(column)"
+                            [attr.min]="0" 
+                            (change)="validarNotaRecuperacion(row, column, colIndex)"
+                            [disabled]="turno?.registroCerrado || row.guardando?.[column]" 
+                            [ngClass]="{
+                              'is-valid': row.estadoGuardado?.[column] === true,
+                              'is-invalid': row.estadoGuardado?.[column] === false
+                            }" 
+                          />
+                        } @else {
+                          @if (column === 'finalGrade') {
+                            <span class="final-grade" [ngClass]="{
+                              'text-success': row[column] >= turno?.notaMinima,
+                              'text-danger': row[column] < turno?.notaMinima
+                            }">
+                              {{ row[column] }}
+                            </span>
+                          } @else {
+                            <span class="grade-value">{{ row[column] }}</span>
+                          }
+                        }
+                      </div>
+                    }
+                  }
+                </div>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+
+        @if (dataSourceRecuperacion.data.length === 0) {
+          <mat-card class="text-center p-4">
+            <mat-card-content>No hay notas de recuperación</mat-card-content>
+          </mat-card>
         }
-
-        <mat-header-row *matHeaderRowDef="tableColumns" sticky class="sticky-header-row"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: tableColumns;"></mat-row>
-
-        <!-- Row shown when there is no matching data. -->
-        <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell" colspan="10">No se encontraron datos: "{{input.value}}"</td>
-        </tr>
-      </table>
       </div>
     </div>
   </div>
@@ -210,28 +360,77 @@
 
 } 
 <div class="row mt-2">
-  <div class="col-12 d-flex justify-content-center gap-2">
-    <input #fileInput type="file" accept=".xlsx,.xls" style="display: none;" (change)="onFileSelected($event)">
-    
-    <button mat-raised-button color="accent" 
-            (click)="fileInput.click()" 
-            [disabled]="!turno || turno?.registroCerrado">
-      <mat-icon>upload</mat-icon>
-      IMPORTAR EXCEL
-    </button>
-    
-    <button mat-raised-button color="primary" 
-            (click)="exportarNotasAExcel()" 
-            [disabled]="!dataSource?.data?.length">
-      <mat-icon>download</mat-icon>
-      EXPORTAR A EXCEL
-    </button>
-    
-    <button mat-raised-button 
-            (click)="confirmarCerrarActa()" 
-            [disabled]="turno?.registroCerrado || tieneNotasVacias()">
-      <mat-icon>close</mat-icon>
-      CERRAR ACTA
-    </button>
+  <div class="col-12">
+    <!-- Desktop Button Layout -->
+    <div class="d-none d-md-flex justify-content-center gap-2">
+      <input #fileInput type="file" accept=".xlsx,.xls" style="display: none;" (change)="onFileSelected($event)">
+      
+      <button mat-stroked-button color="accent" 
+              (click)="fileInput.click()" 
+              [disabled]="!turno || turno?.registroCerrado">
+        <mat-icon>upload</mat-icon>
+        IMPORTAR EXCEL
+      </button>
+      
+      <button mat-raised-button color="primary" 
+              (click)="exportarNotasAExcel()" 
+              [disabled]="!dataSource?.data?.length">
+        <mat-icon>download</mat-icon>
+        EXPORTAR A EXCEL
+      </button>
+      
+      <button mat-flat-button color="warn" 
+              (click)="guardarNotasMasivoManual()" 
+              [disabled]="!tieneNotasPendientes() || turno?.registroCerrado">
+        <mat-icon>save</mat-icon>
+        GUARDAR NOTAS
+      </button>
+      
+      <button mat-button 
+              (click)="confirmarCerrarActa()" 
+              [disabled]="turno?.registroCerrado">
+        <mat-icon>close</mat-icon>
+        CERRAR ACTA
+      </button>
+    </div>
+
+    <!-- Mobile Button Layout -->
+    <div class="d-block d-md-none">
+      <div class="d-grid gap-3">
+        <input #fileInput type="file" accept=".xlsx,.xls" style="display: none;" (change)="onFileSelected($event)">
+        
+        <button mat-stroked-button color="accent" 
+                class="w-100"
+                (click)="fileInput.click()" 
+                [disabled]="!turno || turno?.registroCerrado">
+          <mat-icon>upload</mat-icon>
+          <span class="ms-2">IMPORTAR EXCEL</span>
+        </button>
+        
+        <button mat-raised-button color="primary" 
+                class="w-100"
+                (click)="exportarNotasAExcel()" 
+                [disabled]="!dataSource?.data?.length">
+          <mat-icon>download</mat-icon>
+          <span class="ms-2">EXPORTAR A EXCEL</span>
+        </button>
+        
+        <button mat-flat-button color="warn" 
+                class="w-100"
+                (click)="guardarNotasMasivoManual()" 
+                [disabled]="!tieneNotasPendientes() || turno?.registroCerrado">
+          <mat-icon>save</mat-icon>
+          <span class="ms-2">GUARDAR NOTAS</span>
+        </button>
+        
+        <button mat-button 
+                class="w-100"
+                (click)="confirmarCerrarActa()" 
+                [disabled]="turno?.registroCerrado">
+          <mat-icon>close</mat-icon>
+          <span class="ms-2">CERRAR ACTA</span>
+        </button>
+      </div>
+    </div>
   </div>
 </div>

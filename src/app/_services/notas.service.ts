@@ -30,4 +30,8 @@ import { environment } from "../../environments/environment.development";
     calcularPromedio(idNota: number, idFormatoNota: number) {
         return this.http.get(this.apiUrl + 'Promedio/' + idNota + '/' + idFormatoNota);
     }
+
+    calcularPromedioSinGuardar(notaDto: any) {
+        return this.http.post(this.apiUrl + 'calcular-promedio', notaDto);
+    }
 }

@@ -111,9 +111,6 @@ export class AsistComponent implements OnInit{
              });
              
            }
-        },
-        error: (err) => {
-          console.log(err);
         }
       });
     

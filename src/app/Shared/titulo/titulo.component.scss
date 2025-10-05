@@ -8,14 +8,14 @@
   //     backdrop-filter: blur(8px);
   //     -webkit-backdrop-filter: blur(8px);
     @include mat.toolbar-overrides((
-        container-text-color: var(--mat-sys-outline),
-        //  container-background-color: #314f9b
-      ));
+        container-text-color: var(--mat-sys-secondary),
+         container-background-color: var(--mat-sys-surface) 
+        ));
 
 }
 
 .btn-titulo {
     @include mat.icon-overrides((
-        color: var(--mat-sys-outline),
+        color: var(--mat-sys-secondary),
       ));
 }

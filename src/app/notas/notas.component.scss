@@ -240,4 +240,99 @@ input[type="number"] {
   padding-right: 2px !important;
   text-align: center;
 }
+
+// version mobile
+
+/* Mobile Cards Styles */
+.mobile-cards-container {
+  padding: 0.5rem;
+}
+
+.student-card {
+  border-left: 4px solid var(--mat-sys-primary);
+  margin-bottom: 1rem;
+}
+
+.recovery-card {
+  border-left-color: var(--mat-sys-tertiary);
+}
+
+.student-name {
+  font-size: 1rem !important;
+  font-weight: 600;
+  margin: 0;
+}
+
+.student-number {
+  background: var(--mat-sys-primary);
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.8rem;
+  margin-right: 0.5rem;
+}
+
+.grades-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.grade-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.grade-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #666;
+  margin: 0;
+}
+
+.grade-input {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 0.25rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.grade-input.is-valid {
+  border-color: #28a745;
+  background-color: #d4edda;
+}
+
+.grade-input.is-invalid {
+  border-color: var(--mat-sys-error);
+  background-color: var(--mat-sys-error-container);
+}
+
+.grade-value {
+  padding: 0.5rem;
+  background: var(--mat-sys-on-surface);
+  border-radius: 0.25rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.final-grade {
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+@media (max-width: 576px) {
+  .grades-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .mobile-cards-container {
+    padding: 0.25rem;
+  }
+}
   

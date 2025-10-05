@@ -151,7 +151,7 @@ export class ProfesorComponent {
         this.obtenerHorario();
       })
 
-    }
+   }
   }
 
 isCurrentEvent(event: CalendarSchedulerEvent): boolean {
