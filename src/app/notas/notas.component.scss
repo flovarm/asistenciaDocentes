@@ -335,4 +335,29 @@ input[type="number"] {
     padding: 0.25rem;
   }
 }
+
+// Estilos para el enlace del nombre del alumno
+.alumno-link {
+  color: var(--mat-sys-primary);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  display: inline-block;
+  
+  &:hover {
+    color: var(--mat-sys-primary-dark, var(--mat-sys-primary));
+    text-decoration: underline;
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  &:focus {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
   

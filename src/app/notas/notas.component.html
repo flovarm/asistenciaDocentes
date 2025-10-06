@@ -42,16 +42,20 @@
 
         </div>
         <div class="col-12 col-md-4 col-lg-4">
+          @if (turno?.notaMinima || turno?.notaMinima > 40) {
+          <div class="advertencia p-3 rounded border-start border-warning border-3">
+                <div class="d-flex align-items-start">
+                    <img src="/images/undraw_notify_rnwe.svg" 
+                         alt="Warning icon" 
+                         class="me-2 mt-1" 
+                         style="width: 24px; height: 24px;">
+                    <div>
+                       <p>La nota mínima aprobatoria es: <strong>{{turno?.notaMinima}}</strong></p>
+                    </div>
+                </div>
+            </div>
 
-          <p class="notaMinima"><strong>Actualizado</strong></p>
-
-
-        </div>
-        <div class="col-12 col-md-4 col-lg-4">
-
-          <p class="notaMinima">Nota mínima aprobatoria: <strong>{{turno?.notaMinima}}</strong></p>
-
-
+          }
         </div>
       </div>
       <div class="row d-flex justify-content-center">
@@ -72,7 +76,9 @@
                   </div>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" class="d-flex alumno-col sticky-cell">
-                  {{ row.alumno || 'Sin datos' }}
+                  <span class="alumno-link" (click)="navegarADetalleAlumno(row)" [title]="'Ver detalle de ' + (row.alumno || 'alumno')">
+                    {{ row.alumno || 'Sin datos' }}
+                  </span>
                 </mat-cell>
               </ng-container>
 
@@ -144,7 +150,9 @@
                   <mat-card-header>
                     <mat-card-title class="student-name">
                       <span class="student-number">#{{ i + 1 }}</span>
-                      {{ row.alumno || 'Sin datos' }}
+                      <span class="alumno-link" (click)="navegarADetalleAlumno(row)" [title]="'Ver detalle de ' + (row.alumno || 'alumno')">
+                        {{ row.alumno || 'Sin datos' }}
+                      </span>
                     </mat-card-title>
                   </mat-card-header>
                   <mat-card-content>
@@ -237,7 +245,9 @@
               </div>
             </mat-header-cell>
             <mat-cell *matCellDef="let row" class="d-flex justify-content-center alumno-col sticky-cell">
-              {{ row.alumno || 'Sin datos' }}
+              <span class="alumno-link" (click)="navegarADetalleAlumno(row)" [title]="'Ver detalle de ' + (row.alumno || 'alumno')">
+                {{ row.alumno || 'Sin datos' }}
+              </span>
             </mat-cell>
           </ng-container>
 
@@ -303,7 +313,9 @@
               <mat-card-header>
                 <mat-card-title class="student-name">
                   <span class="student-number">#{{ i + 1 }}</span>
-                  {{ row.alumno || 'Sin datos' }}
+                  <span class="alumno-link" (click)="navegarADetalleAlumno(row)" [title]="'Ver detalle de ' + (row.alumno || 'alumno')">
+                    {{ row.alumno || 'Sin datos' }}
+                  </span>
                 </mat-card-title>
                 <mat-card-subtitle class="text-warning">Recuperación</mat-card-subtitle>
               </mat-card-header>

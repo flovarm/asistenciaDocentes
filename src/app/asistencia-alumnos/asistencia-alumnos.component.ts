@@ -151,12 +151,17 @@ displayedColumnsRecuperacion: string[] = ['numero','alumno', 'accion'];
   }
 
   getTodayString(): string {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
+  const today = new Date();
+  // Force local timezone to avoid UTC issues
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  
+  const todayString = `${year}-${month}-${day}`;
+  console.log('Today string:', todayString, 'Current date:', today);
+  
+  return todayString;
+}
 
   guardarAsistencia(): void {
   const today = new Date(this.getTodayString());
@@ -201,9 +206,27 @@ displayedColumnsRecuperacion: string[] = ['numero','alumno', 'accion'];
 
 isEditableDate(column: string): boolean {
   const today = new Date();
-  const colDate = new Date(column);
-  // Compara solo año, mes y día
-  return colDate <= today;
+  const todayYear = today.getFullYear();
+  const todayMonth = today.getMonth();
+  const todayDay = today.getDate();
+  
+  const colDate = new Date(column + 'T00:00:00'); // Add time to avoid timezone issues
+  const colYear = colDate.getFullYear();
+  const colMonth = colDate.getMonth();
+  const colDay = colDate.getDate();
+  
+  console.log('Comparing dates:', {
+    today: { year: todayYear, month: todayMonth + 1, day: todayDay },
+    column: column,
+    colDate: { year: colYear, month: colMonth + 1, day: colDay }
+  });
+  
+  // Compare year, month, and day separately to avoid timezone issues
+  if (colYear < todayYear) return true;
+  if (colYear > todayYear) return false;
+  if (colMonth < todayMonth) return true;
+  if (colMonth > todayMonth) return false;
+  return colDay <= todayDay;
 }
 
  guardarRecuperado(): void {
@@ -270,8 +293,15 @@ hasFechasEditables(): boolean {
  * Verifica si existe específicamente la fecha actual en las columnas disponibles
  */
 existeFechaActual(): boolean {
-  const today = this.getTodayString();
-  return this.displayedColumns.some(col => this.isDateColumn(col) && col === today);
+  const today = new Date();
+  const todayString = this.getTodayString();
+  
+  console.log('Checking if today exists:', todayString, 'Available columns:', this.displayedColumns);
+  
+  return this.displayedColumns.some(col => {
+    if (!this.isDateColumn(col)) return false;
+    return col === todayString;
+  });
 }
 
 /**

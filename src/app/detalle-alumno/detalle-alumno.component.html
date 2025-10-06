@@ -1,0 +1,281 @@
+<app-titulo [title]="alumno?.alumno?.completo || 'Detalle del Alumno'" icon="person"></app-titulo>
+<div class="row mt-1">
+    <div class="col-12 col-md-6 order-2 order-md-1">
+        <mat-card class="p-3">
+            <mat-card-subtitle>Datos Personales del Alumno</mat-card-subtitle>
+            <mat-list class="example-list-wrapping">
+      <mat-list-item>
+        <span matListItemTitle>Nro de documento:</span>
+        <span>
+          {{ alumno?.alumno?.docid || 'No especificado' }}
+        </span>
+      </mat-list-item>
+      <mat-list-item >
+        <span matListItemTitle>Correo:</span>
+        <span>
+          {{ alumno?.alumno?.email || 'No especificado' }}
+        </span>
+      </mat-list-item>
+        <mat-list-item>
+            <span matListItemTitle>Sexo:</span>
+            <span>
+              {{ alumno?.alumno?.sexo === 'M' ? 'Masculino' : (alumno?.alumno?.sexo === 'F' ? 'Femenino' : 'Otro') }}
+            </span>
+      </mat-list-item>
+      <mat-list-item>
+        <span matListItemTitle>Dirección:</span>
+        <span>
+          {{ alumno?.alumno?.direccion || 'No especificado' }}
+        </span>
+      </mat-list-item>
+    </mat-list>
+        </mat-card>
+        
+    </div>
+    <div class="col-12 col-md-6 order-1 order-md-2 mb-3 mb-md-0">
+        <div class="d-flex justify-content-centerlign-items-center">
+                   <div >
+            <div class="advertencia p-3 rounded border-start border-warning border-3">
+                <div class="d-flex align-items-start">
+                    <img src="/images/undraw_notify_rnwe.svg" 
+                         alt="Warning icon" 
+                         class="me-2 mt-1" 
+                         style="width: 48px; height: 48px;">
+                    <div>
+                        <h6 class="mb-2">
+                            <strong> INFORMACIÓN CONFIDENCIAL</strong>
+                        </h6>
+                        <p class="mb-1 small">
+                            Los datos mostrados en esta sección contienen <strong>información personal y sensible del estudiante</strong>.
+                        </p>
+                        <p class="mb-0 small">
+                            Por favor, mantenga la <strong>confidencialidad</strong> y use esta información de manera 
+                            <strong>responsable y discreta</strong> conforme a las políticas de privacidad institucionales.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+      
+    </div>
+</div>
+
+    <mat-card class="mt-2 p-4">
+       <mat-tab-group>
+      <mat-tab label="Contacto">
+        <div class="p-3">
+               <!-- Sección de Teléfonos -->
+          <div class="mb-4">
+            <mat-card-subtitle>Teléfonos de Contacto</mat-card-subtitle>
+            @if (alumno?.telefonos && alumno.telefonos.length > 0) {
+              <div class="row">
+                @for (telefono of alumno.telefonos; track telefono.idtfno) {
+                  <div class="col-12 mb-3">
+                    <mat-card>
+                      <mat-card-content>
+                        <h6 class="card-subtitle mb-2 text-muted">
+                          <i class="fas fa-mobile-alt me-1"></i>
+                          {{ telefono.tipoTfno }}
+                        </h6>
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-2 mb-md-0">
+                                <span class="text-muted">Número:</span>
+                                <span class="">{{ telefono.numeroTfno || 'No especificado' }}</span>
+                            </div>
+                            <div class="col-12 col-md-6 mb-2 mb-md-0">
+                                <span class="text-muted">Persona:</span>
+                                <span class="">{{ telefono.personaTfno || 'No especificado' }}</span>
+                            </div>
+                        </div>
+                      </mat-card-content>
+                    </mat-card>
+                  </div>
+                }
+              </div>
+            } @else {
+              <mat-card>
+                <mat-card-content class="p-3 text-center text-muted">
+                  <i class="fas fa-info-circle me-2"></i>
+                  No hay teléfonos de contacto disponibles
+                </mat-card-content>
+              </mat-card>
+            }
+          </div>
+          <!-- Sección de Apoderados -->
+          <div class="mb-3 p-2">
+            <mat-card-subtitle>Apoderados</mat-card-subtitle>
+            @if (alumno?.apoderados && alumno.apoderados.length > 0) {
+              @for (apoderado of alumno.apoderados; track apoderado.idapoderado) {
+                <mat-card class="mb-3">
+                  <mat-card-content class="p-3">
+                    <div class="row">
+                      <div class="col-12 col-md-6">
+                        <h6 class="card-subtitle mb-2 text-muted">Apoderado 1</h6>
+                        <mat-list class="example-list-wrapping">
+                          <mat-list-item>
+                            <span matListItemTitle>Nombre:</span>
+                            <span>{{ apoderado.nombre1Apo || 'No especificado' }}</span>
+                          </mat-list-item>
+                          <mat-list-item>
+                            <span matListItemTitle>Apellidos:</span>
+                            <span>{{ apoderado.apellidos1Apo || 'No especificado' }}</span>
+                          </mat-list-item>
+                          <mat-list-item>
+                            <span matListItemTitle>Tipo:</span>
+                            <span>{{ apoderado.tipo1Apo || 'No especificado' }}</span>
+                          </mat-list-item>
+                          <mat-list-item>
+                            <span matListItemTitle>Email:</span>
+                            <span>{{ apoderado.email1Apo || 'No especificado' }}</span>
+                          </mat-list-item>
+                          <mat-list-item>
+                            <span matListItemTitle>Teléfono:</span>
+                            <span class="">
+                              <span class="me-2">{{ apoderado.tfno1Apo || 'No especificado' }}</span>
+                              @if (apoderado.tfno1Apo && apoderado.tfno1Apo !== 'No especificado' && apoderado.tfno1Apo.trim() !== '') {
+                                <button 
+                                  mat-icon-button 
+                                  (click)="copiarTelefono(apoderado.tfno1Apo)"
+                                  matTooltip="Copiar teléfono 1"
+                                  class="btn-copy">
+                                  <mat-icon>content_copy</mat-icon>
+                                </button>
+                              }
+                            </span>
+                          </mat-list-item>
+                        </mat-list>
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <h6 class="card-subtitle mb-2 text-muted">Apoderado 2</h6>
+                        <mat-list class="example-list-wrapping">
+                          <mat-list-item>
+                            <span matListItemTitle>Nombre:</span>
+                            <span>{{ apoderado.nombre2Apo || 'No especificado' }}</span>
+                          </mat-list-item>
+                          <mat-list-item>
+                            <span matListItemTitle>Apellidos:</span>
+                            <span>{{ apoderado.apellidos2Apo || 'No especificado' }}</span>
+                          </mat-list-item>
+                          <mat-list-item>
+                            <span matListItemTitle>Tipo:</span>
+                            <span>{{ apoderado.tipo2Apo || 'No especificado' }}</span>
+                          </mat-list-item>
+                          <mat-list-item>
+                            <span matListItemTitle>Email:</span>
+                            <span>{{ apoderado.email2Apo || 'No especificado' }}</span>
+                          </mat-list-item>
+                          <mat-list-item>
+                            <span matListItemTitle>Teléfono:</span>
+                            <span class="">
+                              <span class="me-2">{{ apoderado.tfno2Apo || 'No especificado' }}</span>
+                              @if (apoderado.tfno2Apo && apoderado.tfno2Apo !== 'No especificado' && apoderado.tfno2Apo.trim() !== '') {
+                                <button 
+                                  mat-icon-button 
+                                  (click)="copiarTelefono(apoderado.tfno2Apo)"
+                                  matTooltip="Copiar teléfono 2"
+                                  class="btn-copy">
+                                  <mat-icon>content_copy</mat-icon>
+                                </button>
+                              }
+                            </span>
+                          </mat-list-item>
+                        </mat-list>
+                      </div>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              }
+            } @else {
+              <mat-card>
+                <mat-card-content class="p-3 text-center text-muted">
+                  <i class="fas fa-info-circle me-2"></i>
+                  No hay información de apoderados disponible
+                </mat-card-content>
+              </mat-card>
+            }
+          </div>
+
+       
+        </div>
+      </mat-tab>
+      <mat-tab label="Historial Académico"> 
+    <app-historial-academico></app-historial-academico>    
+    </mat-tab>
+      <mat-tab label="Datos adicionales">
+        <div class="p-3">
+          <mat-card>
+            <mat-card-content class="p-3">
+              <mat-card-subtitle class="mb-3">Información Médica y Administrativa</mat-card-subtitle>
+              
+              <!-- Alergia -->
+              <div class="mb-3">
+                <div class="alert {{ (alumno?.alumno?.alergia && alumno.alumno.alergia !== 'No especificado' && alumno.alumno.alergia.trim() !== '') ? 'alert-warning' : 'alert-success' }} mb-2">
+                  <div class="d-flex align-items-center">
+                    <i class="fas {{ (alumno?.alumno?.alergia && alumno.alumno.alergia !== 'No especificado' && alumno.alumno.alergia.trim() !== '') ? 'fa-exclamation-triangle' : 'fa-check-circle' }} me-2"></i>
+                    <div>
+                      <strong>Alergia:</strong>
+                      <span class="ms-2">{{ alumno?.alumno?.alergia || 'No presenta alergias' }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Condición Especial -->
+              <div class="mb-3">
+                <div class="alert {{ (alumno?.alumno?.condicionEspecial && alumno.alumno.condicionEspecial !== 'No especificado' && alumno.alumno.condicionEspecial.trim() !== '') ? 'alert-info' : 'alert-success' }} mb-2">
+                  <div class="d-flex align-items-center">
+                    <i class="fas {{ (alumno?.alumno?.condicionEspecial && alumno.alumno.condicionEspecial !== 'No especificado' && alumno.alumno.condicionEspecial.trim() !== '') ? 'fa-info-circle' : 'fa-check-circle' }} me-2"></i>
+                    <div>
+                      <strong>Condición Especial:</strong>
+                      <span class="ms-2">{{ alumno?.alumno?.condicionEspecial || 'No presenta condiciones especiales' }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Enfermedad -->
+              <div class="mb-3">
+                <div class="alert {{ (alumno?.alumno?.enfermedad && alumno.alumno.enfermedad !== 'No especificado' && alumno.alumno.enfermedad.trim() !== '') ? 'alert-danger' : 'alert-success' }} mb-2">
+                  <div class="d-flex align-items-center">
+                    <i class="fas {{ (alumno?.alumno?.enfermedad && alumno.alumno.enfermedad !== 'No especificado' && alumno.alumno.enfermedad.trim() !== '') ? 'fa-heartbeat' : 'fa-check-circle' }} me-2"></i>
+                    <div>
+                      <strong>Enfermedad:</strong>
+                      <span class="ms-2">{{ alumno?.alumno?.enfermedad || 'No presenta enfermedades' }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Seguro -->
+              <div class="mb-3">
+                <div class="alert {{ (alumno?.alumno?.seguro && alumno.alumno.seguro !== 'No especificado' && alumno.alumno.seguro.trim() !== '') ? 'alert-primary' : 'alert-secondary' }} mb-2">
+                  <div class="d-flex align-items-center">
+                    <i class="fas {{ (alumno?.alumno?.seguro && alumno.alumno.seguro !== 'No especificado' && alumno.alumno.seguro.trim() !== '') ? 'fa-shield-alt' : 'fa-times-circle' }} me-2"></i>
+                    <div>
+                      <strong>Seguro:</strong>
+                      <span class="ms-2">{{ alumno?.alumno?.seguro || 'No tiene seguro registrado' }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Permite Retiro -->
+              <mat-list class="example-list-wrapping">
+                <mat-list-item>
+                  <span matListItemTitle>Permite Retiro:</span>
+                  <span>
+                    @if (alumno?.alumno?.permiteRetiro !== null && alumno?.alumno?.permiteRetiro !== undefined) {
+                      {{ alumno.alumno.permiteRetiro ? 'Sí' : 'No' }}
+                    } @else {
+                      No especificado
+                    }
+                  </span>
+                </mat-list-item>
+              </mat-list>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+    </mat-card>

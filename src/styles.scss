@@ -94,9 +94,6 @@ body {
 @import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
 h2,
-p {
-  padding: 16px;
-}
 
 .mr-8 {
   margin-right: 8px;
@@ -310,4 +307,9 @@ textarea{
 
 .blinking-event:hover {
   animation-play-state: paused;
+}
+
+.advertencia {
+  background-color: var(--mat-sys-tertiary-container);
+  color: var(--mat-sys-on-tertiary-container);
 }

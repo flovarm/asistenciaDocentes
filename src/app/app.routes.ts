@@ -9,6 +9,7 @@ import { authGuard } from './_guards/auth.guard';
 import { HomeComponent } from './home/home.component';
 import { HorarioDetalleComponent } from './horario-detalle/horario-detalle.component';
 import { AlumnosComponent } from './alumnos/alumnos.component';
+import { DetalleAlumnoComponent } from './detalle-alumno/detalle-alumno.component';
 
 export const routes: Routes = [
     {
@@ -47,14 +48,7 @@ export const routes: Routes = [
                 },
                 component: AsistenciaAlumnosComponent
             },
-            {
-                path: 'Alumnos',
-                title: 'Mis Alumnos',
-                data: {
-                    'icon': 'group ', 
-                },
-                component: AlumnosComponent
-            },
+           
             {
                 path: 'horario',
                 title: 'Horario',
@@ -62,6 +56,14 @@ export const routes: Routes = [
                     'icon': 'schedule', 
                 },
                 component: HorarioDetalleComponent
+            },
+            {
+                path: 'detalle-alumno/:codigo',
+                title: 'Detalle del Alumno',
+                data: {
+                    'icon': 'person', 
+                },
+                component: DetalleAlumnoComponent
             }
         ]
     },
@@ -69,6 +71,6 @@ export const routes: Routes = [
         path: 'login',
         component: LoginComponent
     },
-    { path: '', redirectTo: '', pathMatch: 'full' },
+    { path: '**', redirectTo: '', pathMatch: 'full' }
 
 ];

@@ -2,6 +2,7 @@ import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 // Angular Material imports
 import { MatCardModule } from '@angular/material/card';
@@ -67,6 +68,7 @@ export class NotasComponent implements OnInit{
   readonly dialog = inject(MatDialog);
   private snack = inject(MatSnackBar);
   private exportExcelService = inject(ExportExcelService);
+  private router = inject(Router);
   dataSource =new MatTableDataSource<any>();
    dataSourceRecuperacion =new MatTableDataSource<any>();
   tableColumns: string[] = []; 
@@ -857,6 +859,27 @@ confirmarCerrarActa() {
     }
 
     return false;
+  }
+
+  navegarADetalleAlumno(row: any): void {
+    if (row.codigo) {
+      this.router.navigate(['/detalle-alumno', row.codigo]).catch(error => {
+        console.error('Error de navegación:', error);
+        this.snack.open('Error al navegar al detalle del alumno', 'Cerrar', {
+          duration: 3000,
+          panelClass: ['snack-error'],
+          horizontalPosition: 'center',
+          verticalPosition: 'top'
+        });
+      });
+    } else {
+      this.snack.open('No se pudo obtener el código del alumno', 'Cerrar', {
+        duration: 3000,
+        panelClass: ['snack-warning'],
+        horizontalPosition: 'center',
+        verticalPosition: 'top'
+      });
+    }
   }
 
 }
