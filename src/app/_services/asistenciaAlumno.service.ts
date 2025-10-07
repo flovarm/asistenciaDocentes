@@ -9,7 +9,10 @@ import { AsistenciaAlumno } from "../_models/asistenciaAlumno";
     private http = inject(HttpClient);
     apiUrl = environment.apiUrl + "AsistenciaAlumno/";
 
-    ObtenerLista(idHorario: number) {
+    ObtenerLista(idHorario: number , Codigo?: number) {
+        if (Codigo) {
+            return this.http.get<AsistenciaAlumno[]>(this.apiUrl + "Detalle/" + idHorario + "/" + Codigo);
+        }
         return this.http.get(this.apiUrl + idHorario);
     }
 

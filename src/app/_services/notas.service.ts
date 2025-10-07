@@ -8,11 +8,14 @@ import { environment } from "../../environments/environment.development";
     private http = inject(HttpClient);
     apiUrl = environment.apiUrl + 'Nota/'
 
-    listarNotas(idHorario: number, idFormatoNota: number){
-        return this.http.get(this.apiUrl + idHorario + '/' + idFormatoNota );
+     listarNotas(idHorario: number, idFormatoNota: number, idRegistro?: number) {
+        if (idRegistro) {
+            return this.http.get(`${this.apiUrl}Detalle/${idHorario}/${idFormatoNota}/${idRegistro}`);
+        }
+        return this.http.get(`${this.apiUrl}${idHorario}/${idFormatoNota}`);
     }
-    listarNotasRecuperacion(idHorario: number, idFormatoNota: number){
-        return this.http.get(this.apiUrl + 'Recuperacion/' + idHorario + '/' + idFormatoNota );
+    listarNotasRecuperacion(idHorario: number, idFormatoNota: number) {
+        return this.http.get(this.apiUrl + 'Recuperacion/' + idHorario + '/' + idFormatoNota);
     }
 
     actualizarNota(nota: any) {

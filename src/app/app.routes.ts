@@ -10,6 +10,7 @@ import { HomeComponent } from './home/home.component';
 import { HorarioDetalleComponent } from './horario-detalle/horario-detalle.component';
 import { AlumnosComponent } from './alumnos/alumnos.component';
 import { DetalleAlumnoComponent } from './detalle-alumno/detalle-alumno.component';
+import { AgenteVirtualComponent } from './agente-virtual/agente-virtual.component';
 
 export const routes: Routes = [
     {
@@ -64,6 +65,14 @@ export const routes: Routes = [
                     'icon': 'person', 
                 },
                 component: DetalleAlumnoComponent
+            },
+            {
+                path: 'AgenteVirtual',
+                title: 'Agente Virtual',
+                data: {
+                    'icon': 'support_agent', 
+                },
+                component: AgenteVirtualComponent
             }
         ]
     },

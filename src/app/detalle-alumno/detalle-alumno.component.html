@@ -1,6 +1,43 @@
+<div class="d-flex justify-content-center align-items-center mb-3 mt-5">
+  <img src="/images/undraw_notify_rnwe.svg"
+  alt="Warning icon"
+  class="me-2 mt-1"
+  style="width: 300px; height: auto;">
+</div>
+<div class="d-flex justify-content-center align-items-center">
+    <div class="row">
+    
+  <div class="col-12 d-flex justify-content-center order-1 mb-3 mb-md-0">
+    
+      <div class="advertencia p-3 rounded border-start border-warning border-3 h-100">
+        <div>
+          <h6 class="mb-2 mt-4">
+            <strong> INFORMACIÓN CONFIDENCIAL</strong>
+          </h6>
+          <p class="mb-1 small">
+            Los datos mostrados en esta sección contienen <strong>información personal y sensible del estudiante</strong>.
+          </p>
+          <p class="mb-0 small">
+            Por favor, mantenga la <strong>confidencialidad</strong> y use esta información de manera 
+            <strong>responsable y discreta</strong> conforme a las políticas de privacidad institucionales.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</div>
+<div class="row">
+  <div class="col-12 col-md-3">
+    <button mat-flat-button (click)="volverConEstado()">
+     <mat-icon>arrow_back</mat-icon> REGRESAR
+    </button>
+
+  </div>
+</div>
 <app-titulo [title]="alumno?.alumno?.completo || 'Detalle del Alumno'" icon="person"></app-titulo>
 <div class="row mt-1">
-    <div class="col-12 col-md-6 order-2 order-md-1">
+    <div class="col-12 order-2">
         <mat-card class="p-3">
             <mat-card-subtitle>Datos Personales del Alumno</mat-card-subtitle>
             <mat-list class="example-list-wrapping">
@@ -28,37 +65,29 @@
           {{ alumno?.alumno?.direccion || 'No especificado' }}
         </span>
       </mat-list-item>
+
+                <!-- Nueva información de estado de retiro -->
+                <mat-list-item>
+                  <span matListItemTitle>Permite Retiro:</span>
+                  <span>
+                    @if (fueRegistradoEnNuevoSistema()) {
+                      @if (alumno?.alumno?.permiteRetiro !== null && alumno?.alumno?.permiteRetiro !== undefined) {
+                        <span >
+                          {{ alumno.alumno.permiteRetiro ? 'Sí' : 'No' }}
+                        </span>
+                      } @else {
+                        <span class="text-muted">No especificado</span>
+                      }
+                    } @else {
+                      <span>No registrado</span>
+                    }
+                  </span>
+                </mat-list-item>
     </mat-list>
         </mat-card>
         
     </div>
-    <div class="col-12 col-md-6 order-1 order-md-2 mb-3 mb-md-0">
-        <div class="d-flex justify-content-centerlign-items-center">
-                   <div >
-            <div class="advertencia p-3 rounded border-start border-warning border-3">
-                <div class="d-flex align-items-start">
-                    <img src="/images/undraw_notify_rnwe.svg" 
-                         alt="Warning icon" 
-                         class="me-2 mt-1" 
-                         style="width: 48px; height: 48px;">
-                    <div>
-                        <h6 class="mb-2">
-                            <strong> INFORMACIÓN CONFIDENCIAL</strong>
-                        </h6>
-                        <p class="mb-1 small">
-                            Los datos mostrados en esta sección contienen <strong>información personal y sensible del estudiante</strong>.
-                        </p>
-                        <p class="mb-0 small">
-                            Por favor, mantenga la <strong>confidencialidad</strong> y use esta información de manera 
-                            <strong>responsable y discreta</strong> conforme a las políticas de privacidad institucionales.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </div>
-      
-    </div>
+  
 </div>
 
     <mat-card class="mt-2 p-4">
@@ -144,6 +173,7 @@
                               }
                             </span>
                           </mat-list-item>
+                      
                         </mat-list>
                       </div>
                       <div class="col-12 col-md-6">
@@ -200,14 +230,12 @@
         </div>
       </mat-tab>
       <mat-tab label="Historial Académico"> 
-    <app-historial-academico></app-historial-academico>    
+ <app-historial-academico [codigoAlumno]="codigoAlumno"></app-historial-academico>
     </mat-tab>
-      <mat-tab label="Datos adicionales">
+      <mat-tab label="Datos Privados">
         <div class="p-3">
           <mat-card>
-            <mat-card-content class="p-3">
-              <mat-card-subtitle class="mb-3">Información Médica y Administrativa</mat-card-subtitle>
-              
+            <mat-card-content class="p-3">              
               <!-- Alergia -->
               <div class="mb-3">
                 <div class="alert {{ (alumno?.alumno?.alergia && alumno.alumno.alergia !== 'No especificado' && alumno.alumno.alergia.trim() !== '') ? 'alert-warning' : 'alert-success' }} mb-2">
@@ -260,19 +288,7 @@
                 </div>
               </div>
 
-              <!-- Permite Retiro -->
-              <mat-list class="example-list-wrapping">
-                <mat-list-item>
-                  <span matListItemTitle>Permite Retiro:</span>
-                  <span>
-                    @if (alumno?.alumno?.permiteRetiro !== null && alumno?.alumno?.permiteRetiro !== undefined) {
-                      {{ alumno.alumno.permiteRetiro ? 'Sí' : 'No' }}
-                    } @else {
-                      No especificado
-                    }
-                  </span>
-                </mat-list-item>
-              </mat-list>
+             
             </mat-card-content>
           </mat-card>
         </div>

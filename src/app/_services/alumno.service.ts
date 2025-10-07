@@ -98,9 +98,7 @@ import { AlumnoFilter, PagedResult } from "../_models/alumno-filter.interface";
     getAlumnoDetalle(codigo: number): Observable<any> {
         const url = `${this.apiUrl}detalle/${codigo}`;
 
-        return this.http.get(url).pipe(
-            tap(response => console.log('Detalle Response:', response))
-        );
+        return this.http.get(url)
     }
 
     updateAlumno(codigo: number, alumnoData: any) {
@@ -111,19 +109,15 @@ import { AlumnoFilter, PagedResult } from "../_models/alumno-filter.interface";
     return this.http.post(`${this.apiUrl}agregar`, alumnoData)
     }   
     
-    obtenerHistorialAcademicoByCodigo(codigo: number): Observable<any[]> {
+    obtenerHistorialAcademicoByCodigo(codigo: string): Observable<any[]> {
         const url = `${this.apiUrl}${codigo}/historial-academico`;
-        return this.http.get<any[]>(url).pipe(
-            tap(response => console.log('Historial por código Response:', response))
-        );
+        return this.http.get<any[]>(url);
     }   
     
     buscarAlumnosPaginasdos(filter: AlumnoFilter): Observable<PagedResult<any>> {
         const params = this.buildQueryParams(filter);
         const url = `${this.apiUrl}buscar-alumnos-paginados`;
-        return this.http.get<PagedResult<any>>(url, { params }).pipe(
-            tap(response => console.log('Buscar Alumnos Paginados Response:', response))
-        );
+        return this.http.get<PagedResult<any>>(url, { params })
     }
 
     verificarDNI(dni: string): Observable<{existe: boolean, codigo: number}> {

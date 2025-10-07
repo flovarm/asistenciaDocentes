@@ -26,7 +26,7 @@ import { MatListModule } from '@angular/material/list';
     TituloComponent,
     MatListModule,
     HistorialAcademicoComponent,
-    DatosAdicionalesComponent
+    MatButtonModule
 ],
   templateUrl: './detalle-alumno.component.html',
   styleUrl: './detalle-alumno.component.scss'
@@ -90,6 +90,10 @@ export class DetalleAlumnoComponent implements OnInit, OnDestroy {
     this.location.back();
   }
 
+  volverConEstado(): void {
+    this.location.back();
+  }
+
   copiarTelefono(numero: string): void {
     if (numero && numero.trim() !== '' && numero !== 'No especificado') {
       navigator.clipboard.writeText(numero).then(() => {
@@ -115,4 +119,22 @@ export class DetalleAlumnoComponent implements OnInit, OnDestroy {
       });
     }
   }
+
+  /**
+   * Verifica si fue registrado en el nuevo sistema
+   * Si usuario o usuarioU empiezan con número, fue registrado en el nuevo sistema
+   */
+  fueRegistradoEnNuevoSistema(): boolean {
+    if (!this.alumno?.alumno) return false;
+    
+    const usuario = this.alumno.alumno.usuario;
+    const usuarioU = this.alumno.alumno.usuarioU;
+    
+    // Si usuario empieza con número, fue registrado en el nuevo sistema
+    if (usuario && /^[0-9]/.test(usuario.toString())) return true;
+    if (usuarioU && /^[0-9]/.test(usuarioU.toString())) return true;
+    
+    return false;
+  }
 }
+ 

@@ -1,7 +1,7 @@
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, OnDestroy, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 
 // Angular Material imports
@@ -28,6 +28,7 @@ import { PeriodoService } from '../_services/periodo.service';
 import { NotasService } from '../_services/notas.service';
 import { HorarioService } from '../_services/horario.service';
 import { ExportExcelService } from '../_services/exportExcel.service';
+import { EstadoNotasService } from '../_services/estado-notas.service';
 
 // Models
 import { Periodo } from '../_models/periodo';
@@ -54,7 +55,7 @@ import { Profesor } from '../_models/profesor';
   templateUrl: './notas.component.html',
   styleUrl: './notas.component.scss'
 })
-export class NotasComponent implements OnInit{
+export class NotasComponent implements OnInit, OnDestroy, AfterViewInit{
   filteredOptions: Observable<string[]>;
   turnos : any[] = [];
   turno;
@@ -69,6 +70,8 @@ export class NotasComponent implements OnInit{
   private snack = inject(MatSnackBar);
   private exportExcelService = inject(ExportExcelService);
   private router = inject(Router);
+  private estadoNotasService = inject(EstadoNotasService);
+  private subscriptions = new Subscription();
   dataSource =new MatTableDataSource<any>();
    dataSourceRecuperacion =new MatTableDataSource<any>();
   tableColumns: string[] = []; 
@@ -83,6 +86,109 @@ procesandoCola = false;
   ngOnInit(): void {
     this.obtenerUltimoPeriodo();
   }
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  ngOnDestroy(): void {
+    this.guardarEstadoActual();
+    this.subscriptions.unsubscribe();
+  }
+
+  /**
+   * Guarda el estado actual de las notas
+   */
+  private guardarEstadoActual(): void {
+    if (this.turno) {
+      this.estadoNotasService.guardarTurno(this.turno);
+      this.estadoNotasService.guardarCurso(this.curso);
+      this.estadoNotasService.guardarEstadoNotas(this.dataSource.data);
+      this.estadoNotasService.guardarEstadoNotasRecuperacion(this.dataSourceRecuperacion.data);
+      this.estadoNotasService.guardarColumnas(this.displayedColumns);
+      this.estadoNotasService.guardarColumnasRecuperacion(this.displayedColumnsRecuperacion);
+      
+      // Guardar filtro actual si existe
+      const filtroInput = document.querySelector('#filtroNotas') as HTMLInputElement;
+      if (filtroInput && filtroInput.value) {
+        this.estadoNotasService.guardarFiltro(filtroInput.value);
+      }
+      
+      // Guardar página actual del paginador
+      if (this.paginator) {
+        this.estadoNotasService.guardarPagina(this.paginator.pageIndex);
+      }
+    }
+  }
+
+  /**
+   * Restaura el estado anterior si existe
+   */
+  private restaurarEstadoAnterior(): void {
+    const turnoAnterior = this.estadoNotasService.obtenerTurnoSeleccionado();
+    const cursoAnterior = this.estadoNotasService.obtenerCursoSeleccionado();
+    const filtroAnterior = this.estadoNotasService.obtenerFiltroActual();
+    const estadoNotas = this.estadoNotasService.obtenerEstadoNotas();
+    const estadoNotasRecuperacion = this.estadoNotasService.obtenerEstadoNotasRecuperacion();
+    const columnasGuardadas = this.estadoNotasService.obtenerColumnas();
+    const columnasRecuperacionGuardadas = this.estadoNotasService.obtenerColumnasRecuperacion();
+
+    if (turnoAnterior && turnoAnterior.idHorario && this.turnos.length > 0) {
+      const turnoEncontrado = this.turnos.find(t => t.idHorario === turnoAnterior.idHorario);
+      if (turnoEncontrado) {
+        console.log('Restaurando estado anterior de notas');
+        this.turno = turnoEncontrado;
+        this.curso = cursoAnterior;
+        
+        // Restaurar datos de notas si existen
+        if (estadoNotas && estadoNotas.length > 0) {
+          this.dataSource.data = estadoNotas;
+          this.displayedColumns = columnasGuardadas || ['alumno'];
+          this.tableColumns = ['index', ...this.displayedColumns];
+        }
+        
+        // Restaurar datos de recuperación si existen
+        if (estadoNotasRecuperacion && estadoNotasRecuperacion.length > 0) {
+          this.dataSourceRecuperacion.data = estadoNotasRecuperacion;
+          this.displayedColumnsRecuperacion = columnasRecuperacionGuardadas || ['alumno'];
+        }
+        
+        // Si no hay estado guardado, cargar normalmente
+        if (!estadoNotas || estadoNotas.length === 0) {
+          this.listarNotas(this.turno?.idHorario, this.turno?.idFormatoNota);
+        }
+        
+        // Restaurar filtro después de que se carguen los datos
+        setTimeout(() => {
+          if (filtroAnterior) {
+            this.aplicarFiltroGuardado(filtroAnterior);
+          }
+          // Restaurar página del paginador
+          const paginaAnterior = this.estadoNotasService.obtenerPaginaActual();
+          if (this.paginator && paginaAnterior > 0) {
+            this.paginator.pageIndex = paginaAnterior;
+          }
+        }, 200);
+      } else {
+        this.estadoNotasService.limpiarEstado();
+      }
+    }
+  }
+
+  /**
+   * Aplica un filtro guardado anteriormente
+   */
+  private aplicarFiltroGuardado(filtro: string): void {
+    const filtroInput = document.querySelector('#filtroNotas') as HTMLInputElement;
+    if (filtroInput) {
+      filtroInput.value = filtro;
+      this.dataSource.filter = filtro.trim().toLowerCase();
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
+    }
+  }
+
   obtenerUltimoPeriodo() {
     this.periodoService.obtenerUltimoPeriodo().subscribe({
       next: (result: Periodo) => {
@@ -95,12 +201,18 @@ procesandoCola = false;
   obtenerTurnos(idProfesor, idPeriodo){
     this.turnoService.listarTurnosDocente(idProfesor , idPeriodo).subscribe({
       next : (datos: any[]) => {
-        this.turnos = datos
+        this.turnos = datos;
+        // Intentar restaurar estado después de cargar los turnos
+        if (this.turnos.length > 0) {
+          setTimeout(() => {
+            this.restaurarEstadoAnterior();
+          }, 50);
+        }
       }
     })
   }
 
-listarNotas(idHorario , idFormatoNota) {
+  listarNotas(idHorario , idFormatoNota) {
   this.notasService.listarNotas(idHorario , idFormatoNota).subscribe({
     next : (result: any[]) => {
       this.listarNotasRecuperacion(idHorario, idFormatoNota);
@@ -227,6 +339,14 @@ validarNota(row: any, col: string, colIndex: number): void {
   }
 
   obtenerCurso(){
+    // Solo limpiar estado si hay un cambio real de turno
+    const turnoAnterior = this.estadoNotasService.obtenerTurnoSeleccionado();
+    const esCambioTurno = turnoAnterior && turnoAnterior.idHorario !== this.turno?.idHorario;
+    
+    if (esCambioTurno) {
+      this.estadoNotasService.limpiarEstado();
+    }
+
     this.curso = '';
     setTimeout(() => {
       this.curso = this.turno?.curso ?? '';
@@ -863,6 +983,9 @@ confirmarCerrarActa() {
 
   navegarADetalleAlumno(row: any): void {
     if (row.codigo) {
+      // Guardar estado antes de navegar
+      this.guardarEstadoActual();
+      
       this.router.navigate(['/detalle-alumno', row.codigo]).catch(error => {
         console.error('Error de navegación:', error);
         this.snack.open('Error al navegar al detalle del alumno', 'Cerrar', {
