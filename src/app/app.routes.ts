@@ -73,6 +73,14 @@ export const routes: Routes = [
                     'icon': 'support_agent', 
                 },
                 component: AgenteVirtualComponent
+            },
+            {
+                path: 'Tutoriales',
+                title: 'Tutoriales',
+                data: {
+                    'icon': 'play_lesson', 
+                },
+                loadComponent: () => import('./tutoriales/tutoriales.component').then(c => c.TutorialesComponent)
             }
         ]
     },

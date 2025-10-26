@@ -1,0 +1,61 @@
+<div class="container mt-1">
+
+      <!-- Comments list -->
+  @if (comentarios.length === 0 && !mostrarFormulario) {
+    <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+        <img src="/images/comment.png" alt="comentarios" width="150px">
+      <p>No hay comentarios registrados para este alumno. Sé el primero en comentar</p>
+    </div>
+  } @else if (comentarios.length > 0) {
+    <div class="comments-list p-3">
+      @for (comentario of comentarios; track comentario.id) {
+        <div class="comment-card">
+            <div class="comment-body mt-2">
+              <p class="comment-description">{{ comentario.descripcion }}</p>
+            </div>
+            <div class="comment-footer mb-1">
+                <small class="comment-meta text-muted small">
+                     {{ comentario.nombreCompleto | titlecase}}
+                </small>
+                
+                  <span class="comment-date text-muted small">{{ comentario.fecha | date:'dd-MM-yyyy' }}</span>
+                @if(puedeEditarComentario(comentario)) {
+                    <button mat-button color="primary" (click)="editarComentario(comentario)" title="Editar comentario">
+                        editar
+                    </button>
+                }
+          </div>
+          <mat-divider></mat-divider>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Add/Edit comment form -->
+  <div class="formulario-comentario mt-1">
+    <mat-form-field appearance="outline">
+      <mat-label>
+        {{ comentarioEditando ? 'Editar comentario...' : 'Escriba el comentario...' }}
+      </mat-label>
+      <textarea 
+        matInput
+        [(ngModel)]="nuevoComentario.descripcion"
+        rows="4"
+        placeholder="{{ comentarioEditando ? 'Editar comentario...' : 'Escriba el comentario...' }}"></textarea>
+      <button mat-icon-button matSuffix (click)="agregarComentario()" [disabled]="!nuevoComentario.descripcion.trim()">
+        <mat-icon>{{ comentarioEditando ? 'save' : 'send' }}</mat-icon>
+      </button>
+      @if (comentarioEditando) {
+        <button mat-icon-button matSuffix (click)="cancelarAgregar()">
+          <mat-icon>cancel</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+  </div>
+</div>
+
+
+
+
+
+

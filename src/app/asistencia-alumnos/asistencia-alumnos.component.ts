@@ -66,6 +66,11 @@ export class AsistenciaAlumnosComponent implements OnInit, OnDestroy, AfterViewI
   advertenciaAsistencia: boolean = true;
   dataSourceRecuperacion = new MatTableDataSource<any>([]);
   profesor: Profesor = JSON.parse(localStorage.getItem('profesor'));
+  
+  // Agregar propiedades para rastrear datos originales
+  private datosOriginales: any[] = [];
+  private datosRecuperacionOriginales: any[] = [];
+
   ngOnInit(): void {
     this.obtenerUltimoPeriodo();
   }
@@ -235,6 +240,7 @@ export class AsistenciaAlumnosComponent implements OnInit, OnDestroy, AfterViewI
           this.dataSource.data = [];
           this.displayedColumns = ['alumno'];
           this.tableColumns = ['index', 'alumno'];
+          this.datosOriginales = []; // Limpiar datos originales
           return;
         }
 
@@ -277,6 +283,9 @@ export class AsistenciaAlumnosComponent implements OnInit, OnDestroy, AfterViewI
         this.tableColumns = ['index', ...this.displayedColumns];
         this.dataSource.data = adaptados;
         
+        // Guardar una copia profunda de los datos originales
+        this.datosOriginales = JSON.parse(JSON.stringify(adaptados));
+        
         console.log('Columnas configuradas:', this.displayedColumns);
         console.log('DataSource actualizado, datos:', this.dataSource.data.length);
       },
@@ -315,30 +324,73 @@ export class AsistenciaAlumnosComponent implements OnInit, OnDestroy, AfterViewI
     return todayString;
   }
 
-  guardarAsistencia(): void {
+  /**
+   * Compara los datos actuales con los originales y retorna solo los cambios
+   */
+  private obtenerAsistenciasModificadas(): any[] {
     const today = new Date(this.getTodayString());
     const fechas = this.displayedColumns.filter(col => this.isDateColumn(col));
-    const asistencias = [];
+    const asistenciasModificadas = [];
 
-    this.dataSource.data.forEach(row => {
+    this.dataSource.data.forEach(rowActual => {
+      // Buscar el registro original correspondiente
+      const rowOriginal = this.datosOriginales.find(orig => 
+        orig.idAlumno === rowActual.idAlumno && orig.idHorario === rowActual.idHorario
+      );
+
       fechas.forEach(fecha => {
         const fechaDate = new Date(fecha);
-        // Compara solo año, mes y día
         if (fechaDate <= today) {
-          asistencias.push({
-            idAlumno: row.idAlumno,
-            idHorario: row.idHorario,
-            fecha: fecha,
-            estado: row[fecha] || 'F' // Por defecto "F" si no hay valor
-          });
+          const estadoActual = rowActual[fecha] || 'F';
+          const estadoOriginal = rowOriginal ? (rowOriginal[fecha] || 'F') : 'F';
+
+          // Solo agregar si hay cambios o es un registro nuevo
+          if (!rowOriginal || estadoActual !== estadoOriginal) {
+            asistenciasModificadas.push({
+              idAlumno: rowActual.idAlumno,
+              idHorario: rowActual.idHorario,
+              fecha: fecha,
+              estado: estadoActual
+            });
+          }
         }
       });
     });
-    this.asistenciaAlumnoService.GuardarAsistencias(asistencias).subscribe({
+
+    return asistenciasModificadas;
+  }
+
+  guardarAsistencia(): void {
+    const asistenciasModificadas = this.obtenerAsistenciasModificadas();
+
+    if (asistenciasModificadas.length === 0) {
+      this.snack.open('No hay cambios para guardar', 'Cerrar', { 
+        duration: 3000, 
+        panelClass: ['snack-info'] 
+      });
+      return;
+    }
+
+    console.log('Enviando solo asistencias modificadas:', asistenciasModificadas);
+
+    this.asistenciaAlumnoService.GuardarAsistencias(asistenciasModificadas).subscribe({
       next: () => {
-        this.snack.open('Asistencias guardadas', 'Cerrar', { duration: 3000, panelClass: ['snack-success'] }),
-          this.advertenciaAsistencia = false;
+        this.snack.open(`${asistenciasModificadas.length} asistencias guardadas`, 'Cerrar', { 
+          duration: 3000, 
+          panelClass: ['snack-success'] 
+        });
+        this.advertenciaAsistencia = false;
+        
+        // Actualizar los datos originales después de guardar exitosamente
+        this.datosOriginales = JSON.parse(JSON.stringify(this.dataSource.data));
       },
+      error: (error) => {
+        console.error('Error al guardar asistencias:', error);
+        this.snack.open('Error al guardar asistencias', 'Cerrar', { 
+          duration: 3000, 
+          panelClass: ['snack-error'] 
+        });
+      }
     });
   }
 
@@ -352,6 +404,9 @@ export class AsistenciaAlumnosComponent implements OnInit, OnDestroy, AfterViewI
           estado: d.estado === null ? 'P' : d.estado
         }));
         this.dataSourceRecuperacion.data = this.clasesRecuperacion;
+        
+        // Guardar datos originales de recuperación
+        this.datosRecuperacionOriginales = JSON.parse(JSON.stringify(this.clasesRecuperacion));
       }
     });
   }
@@ -375,24 +430,68 @@ export class AsistenciaAlumnosComponent implements OnInit, OnDestroy, AfterViewI
     return colDay <= todayDay;
   }
 
-  guardarRecuperado(): void {
-    const asistencias = [];
+  /**
+   * Obtiene solo las recuperaciones que han sido modificadas
+   */
+  private obtenerRecuperacionesModificadas(): any[] {
+    const recuperacionesModificadas = [];
 
-    this.dataSourceRecuperacion.data.forEach(row => {
-      const fechaFormateada = row.fecha.split('T')[0];
-      asistencias.push({
-        idAlumno: row.idAlumno,
-        idHorario: row.idHorario,
-        fecha: fechaFormateada,
-        estado: row.estado || 'F' // Por defecto "F" si no hay valor
-      });
+    this.dataSourceRecuperacion.data.forEach(rowActual => {
+      const rowOriginal = this.datosRecuperacionOriginales.find(orig => 
+        orig.idAlumno === rowActual.idAlumno && 
+        orig.idHorario === rowActual.idHorario &&
+        orig.fecha === rowActual.fecha
+      );
+
+      const estadoActual = rowActual.estado || 'F';
+      const estadoOriginal = rowOriginal ? (rowOriginal.estado || 'F') : 'F';
+
+      // Solo agregar si hay cambios o es un registro nuevo
+      if (!rowOriginal || estadoActual !== estadoOriginal) {
+        const fechaFormateada = rowActual.fecha.split('T')[0];
+        recuperacionesModificadas.push({
+          idAlumno: rowActual.idAlumno,
+          idHorario: rowActual.idHorario,
+          fecha: fechaFormateada,
+          estado: estadoActual
+        });
+      }
     });
 
-    this.asistenciaAlumnoService.GuardarAsistencias(asistencias).subscribe({
+    return recuperacionesModificadas;
+  }
+
+  guardarRecuperado(): void {
+    const recuperacionesModificadas = this.obtenerRecuperacionesModificadas();
+
+    if (recuperacionesModificadas.length === 0) {
+      this.snack.open('No hay cambios para guardar', 'Cerrar', { 
+        duration: 3000, 
+        panelClass: ['snack-info'] 
+      });
+      return;
+    }
+
+    console.log('Enviando solo recuperaciones modificadas:', recuperacionesModificadas);
+
+    this.asistenciaAlumnoService.GuardarAsistencias(recuperacionesModificadas).subscribe({
       next: () => {
-        this.snack.open('Asistencias guardadas', 'Cerrar', { duration: 3000, panelClass: ['snack-success'] }),
-          this.advertenciaAsistencia = false;
+        this.snack.open(`${recuperacionesModificadas.length} asistencias de recuperación guardadas`, 'Cerrar', { 
+          duration: 3000, 
+          panelClass: ['snack-success'] 
+        });
+        this.advertenciaAsistencia = false;
+        
+        // Actualizar los datos originales después de guardar exitosamente
+        this.datosRecuperacionOriginales = JSON.parse(JSON.stringify(this.dataSourceRecuperacion.data));
       },
+      error: (error) => {
+        console.error('Error al guardar recuperaciones:', error);
+        this.snack.open('Error al guardar asistencias', 'Cerrar', { 
+          duration: 3000, 
+          panelClass: ['snack-error'] 
+        });
+      }
     });
   }
 
@@ -497,13 +596,14 @@ export class AsistenciaAlumnosComponent implements OnInit, OnDestroy, AfterViewI
     // Activar la advertencia para recordar guardar
     this.advertenciaAsistencia = true;
 
-    // Mostrar mensaje de confirmación
+    // Mostrar cuántos cambios se realizarán
+    const cambios = this.obtenerAsistenciasModificadas().filter(a => a.fecha === fechaActual).length;
     const estadoTexto = estado === 'P' ? 'Presente' : estado === 'T' ? 'Tardanza' : 'Falta';
-    const fechaFormateada = new Date(fechaActual).toLocaleDateString('es-ES');
-    // this.snack.open(`Todos los alumnos marcados como: ${estadoTexto} para ${fechaFormateada}`, 'Cerrar', {
-    //   duration: 3000,
-    //   panelClass: ['snack-success']
-    // });
+    
+    this.snack.open(`${cambios} alumnos marcados como: ${estadoTexto}`, 'Cerrar', {
+      duration: 3000,
+      panelClass: ['snack-success']
+    });
   }
 
   /**

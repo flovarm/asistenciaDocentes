@@ -1,0 +1,63 @@
+<app-titulo title="Tutoriales" icon="play_lesson"></app-titulo>
+<mat-card class="mt-2 mb-2 p-3">
+  <!-- Los tutoriales se definirán en el componente TypeScript -->
+   <mat-form-field>
+    <mat-label>Búsqueda</mat-label>
+    <input matInput placeholder="Buscar tutorial" [(ngModel)]="busquedaTexto" (input)="filtrarTutoriales()">
+     <mat-icon matSuffix>search</mat-icon>
+   </mat-form-field>
+</mat-card>
+
+<mat-card class="mb-2 p-3">
+  <mat-accordion class="mt-1 mb-1">
+    @for (tutorial of tutorialesFiltrados; track tutorial.id) {
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon class="me-2">play_circle_outline</mat-icon>
+            {{ tutorial.nombre }}
+          </mat-panel-title>
+          <mat-panel-description>
+            {{ tutorial.descripcion | slice:0:80 }}{{ tutorial.descripcion.length > 80 ? '...' : '' }}
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        
+        <div class="tutorial-content">
+          <p class="mb-3">{{ tutorial.descripcion }}</p>
+          
+          <!-- Video iframe -->
+          <div class="video-container mb-3">
+            <iframe 
+              [src]="getEmbedUrl(tutorial.url)" 
+              frameborder="0" 
+              allowfullscreen
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              class="tutorial-iframe">
+            </iframe>
+          </div>
+          
+          <div class="tutorial-actions">
+            <a [href]="tutorial.url" target="_blank" rel="noopener noreferrer" 
+               mat-button color="primary" class="me-2">
+              <mat-icon>open_in_new</mat-icon>
+              Abrir en YouTube
+            </a>
+            
+            <button mat-button color="accent">
+              <mat-icon>bookmark_add</mat-icon>
+              Marcar como visto
+            </button>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    }
+    
+    @empty {
+      <div class="no-results p-4 text-center">
+        <mat-icon class="large-icon mb-2">search_off</mat-icon>
+        <p>No se encontraron tutoriales que coincidan con tu búsqueda.</p>
+      </div>
+    }
+  </mat-accordion>
+</mat-card>
+

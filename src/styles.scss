@@ -272,30 +272,6 @@ textarea{
   ));
 }
 
-
-
-// // Tema claro (default)
-// @media (prefers-color-scheme: light) {
-//   body[data-bs-theme="light"] {
-//     @include mat.theme-overrides((
-//        primary: #003384,
-//        on-primary: white,
-//      ));
-
-//   }
-// }
-
-// // Tema oscuro
-// @media (prefers-color-scheme: dark) {
-//  body[data-bs-theme="dark"]  {
-//     @include mat.theme-overrides((
-//      primary: #0056B4,
-//      on-primary: black,
-//    ));
-
-//   }
-// }
-
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; } // Cambia 0 por 0.3 para que nunca desaparezca del todo

@@ -66,6 +66,7 @@ import { AsistenciaAlumnoService } from '../../_services/asistenciaAlumno.servic
                     asistencia[fecha] === 'P' ? 'Asistió' :
                     asistencia[fecha] === 'A' ? 'Falta' :
                     asistencia[fecha] === 'T' ? 'Tardanza' :
+                     asistencia[fecha]  === 'F' ? 'No se registró' :
                     (asistencia[fecha] === '' || asistencia[fecha] === undefined || asistencia[fecha] === null ? 'No se registró' : asistencia[fecha])
                   }}
                   <mat-divider></mat-divider>
@@ -92,7 +93,7 @@ import { AsistenciaAlumnoService } from '../../_services/asistenciaAlumno.servic
                       rec.estado === 'P' ? 'Asistió' :
                       rec.estado === 'A' ? 'Falta' :
                       rec.estado === 'T' ? 'Tardanza' :
-                      (rec.estado === '' || rec.estado === undefined || rec.estado === null ? 'No se registró' : rec.estado)
+                     (rec.estado === '' || rec.estado === undefined || rec.estado === null || rec.estado === 'F' ? 'No se registró' : rec.estado)
                     }}
                     <mat-divider></mat-divider>
                   </td>

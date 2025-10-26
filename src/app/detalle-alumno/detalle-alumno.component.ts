@@ -14,6 +14,7 @@ import { HistorialAcademicoComponent } from "./historial-academico/historial-aca
 import { DatosAdicionalesComponent } from './datos-adicionales/datos-adicionales.component';
 import { Subject, takeUntil, catchError } from 'rxjs';
 import { MatListModule } from '@angular/material/list';
+import { ComentariosComponent } from "./comentarios/comentarios.component";
 
 @Component({
   selector: 'app-detalle-alumno',
@@ -26,8 +27,9 @@ import { MatListModule } from '@angular/material/list';
     TituloComponent,
     MatListModule,
     HistorialAcademicoComponent,
-    MatButtonModule
-],
+    MatButtonModule,
+    ComentariosComponent
+  ],
   templateUrl: './detalle-alumno.component.html',
   styleUrl: './detalle-alumno.component.scss'
 })
@@ -137,4 +139,3 @@ export class DetalleAlumnoComponent implements OnInit, OnDestroy {
     return false;
   }
 }
- 

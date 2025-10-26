@@ -78,7 +78,10 @@ export class NotasComponent implements OnInit, OnDestroy, AfterViewInit{
   displayedColumns: string[] = [];
   displayedColumnsRecuperacion: string[] = [];
   colaNotasPendientes: { nota: any, col: string }[] = [];
-procesandoCola = false;
+  procesandoCola = false;
+  // Agregar nueva propiedad para rastrear cambios
+  notasEditadas: Set<string> = new Set();
+  
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -136,7 +139,6 @@ procesandoCola = false;
     if (turnoAnterior && turnoAnterior.idHorario && this.turnos.length > 0) {
       const turnoEncontrado = this.turnos.find(t => t.idHorario === turnoAnterior.idHorario);
       if (turnoEncontrado) {
-        console.log('Restaurando estado anterior de notas');
         this.turno = turnoEncontrado;
         this.curso = cursoAnterior;
         
@@ -250,7 +252,6 @@ listarNotasRecuperacion(idHorario , idFormatoNota) {
     next : (result: any[]) => {
       if (result.length > 0) {
         const notaEjemplo = result[0];
-        console.log(notaEjemplo);
         // Obtén todas las claves de notas, ignorando cualquier variante de finalGrade
         let columns = Object.keys(notaEjemplo.notas || {}).filter(
           c => c.toLowerCase() !== 'finalgrade'
@@ -273,7 +274,7 @@ listarNotasRecuperacion(idHorario , idFormatoNota) {
   })
 }
 
- // Determina si una columna es una nota (contiene "_")
+// Determina si una columna es una nota (contiene "_")
 isNotaColumn(col: string): boolean {
   return col.includes('_');
 }
@@ -291,6 +292,51 @@ formatColumnNameLine1(col: string): string {
 formatColumnNameLine2(col: string): string {
   return this.isNotaColumn(col) ? `(${col.split('_')[1]})` : '';
 }
+
+getNombreColumnaReal(col: string): string {
+  const partes = col.split('_');
+  return partes[partes.length - 1];
+}
+
+confirmarCerrarActa() {
+  this.dialog.open(ConfirmacionComponent, {
+    data: '¿ Cerrar acta?. Recuerde una vez cerrada el acta ya no podrá editar las notas ni tomar asistencia.',
+  }).afterClosed().subscribe({
+    next: result => {
+      if (result) {
+        this.cerrarActa();
+      }
+    }
+  })
+}
+
+cerrarActa() {
+  this.horarioService.cerrarActa(this.turno.idHorario).subscribe({
+    next: () => {
+      this.snack.open('Acta cerrada correctamente', 'Cerrar', {
+        duration: 2000,
+        panelClass: ['snack-success'],
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom'
+      });
+      this.turno.registroCerrado = true;
+    }
+  });
+}
+
+tieneNotasVacias(): boolean {
+  if (!this.dataSource?.data?.length) return true;
+  // Recorre cada fila y cada columna de notas
+  for (const row of this.dataSource.data) {
+    for (const col of this.displayedColumns) {
+      if (this.isNotaColumn(col) && (row[col] === null || row[col] === undefined || row[col] === '')) {
+        return true; // Hay al menos una nota vacía
+      }
+    }
+  }
+  return false; // No hay notas vacías
+}
+
 // Valida al cambiar una nota
 validarNota(row: any, col: string, colIndex: number): void {
   const max = this.getValorMaximo(col);
@@ -316,17 +362,20 @@ validarNota(row: any, col: string, colIndex: number): void {
     return;
   }
 
-  // ✅ Limpiar el estado de error si la validación es exitosa
+  // Limpiar el estado de error si la validación es exitosa
   if (row.estadoGuardado[col] === false) {
     delete row.estadoGuardado[col];
   }
 
-  // ✅ Calcular promedio sin guardar para mostrar preview
+  // Marcar como nota editada
+  const claveUnica = `${row.idRegistro}-${col}`;
+  this.notasEditadas.add(claveUnica);
+
+  // Calcular promedio sin guardar para mostrar preview
   this.calcularPromedioSinGuardar(row, col);
 
-  // ✅ Marcar como pendiente de guardar (para que se vea en verde luego)
-  row.estadoGuardado[col] = undefined;
- // this.agregarNotaAPendientes(row, col);
+  // Marcar como pendiente
+  row.estadoGuardado[col] = 'pendiente';
 }
 
  applyFilter(event: Event) {
@@ -345,6 +394,8 @@ validarNota(row: any, col: string, colIndex: number): void {
     
     if (esCambioTurno) {
       this.estadoNotasService.limpiarEstado();
+      // Limpiar también las notas editadas al cambiar de turno
+      this.notasEditadas.clear();
     }
 
     this.curso = '';
@@ -354,210 +405,6 @@ validarNota(row: any, col: string, colIndex: number): void {
     });
   }
 
-
-procesarSiguienteNota() {
-  debugger;
-  if (this.colaNotasPendientes.length === 0) {
-    this.procesandoCola = false;
-    return;
-  }
-
-  this.procesandoCola = true;
-
-  const { nota, col } = this.colaNotasPendientes.shift()!;
-
-  const nombreColumna = col.split('_').pop();
-  const valor = nota[col];
-
-  const notaDto = {
-    ...nota,
-    NombreColumna: this.getNombreColumnaReal(col),
-    valor,
-    idPeriodo: this.turno.idPeriodo,
-  };
-
-  const esNueva = !nota.idNota || nota.idNota === 0;
-  const servicio = esNueva
-    ? this.notasService.guardarNota(notaDto)
-    : this.notasService.actualizarNota(notaDto);
-
-  servicio.subscribe({
-    next: (result: any) => {
-      nota.idNota = result.idNota;
-      nota.finalGrade = result.finalGrade; // Actualiza finalGrade si existe
-      Object.assign(nota, result); // actualiza todo el row
-      nota.estadoGuardado = nota.estadoGuardado || {};
-      nota.estadoGuardado[col] = true;
-     // this.calcularPromedio(result);
-      setTimeout(() => {
-        delete nota.estadoGuardado[col];
-      }, 3000);
-    },
-    error: (error) => {
-      console.error('Error al guardar nota:', error);
-      nota.estadoGuardado = nota.estadoGuardado || {};
-      nota.estadoGuardado[col] = false;
-      
-      // Mostrar mensaje de error
-      this.snack.open('Error al guardar la nota', 'Cerrar', {
-        duration: 3000,
-        panelClass: ['snack-error'],
-        horizontalPosition: 'center',
-        verticalPosition: 'top'
-      });
-      
-      // No limpiar el estado de error - se mantiene en rojo permanentemente
-    },
-    complete: () => {
-      this.dataSource._updateChangeSubscription();
-      this.procesarSiguienteNota(); // 👈 llama al siguiente
-    }
-  });
-}
-
-agregarNotaAPendientes(nota: any, col: string) {
-  this.colaNotasPendientes.push({ nota, col });
-
-  // Inicia el procesamiento si no está activo
-  if (!this.procesandoCola) {
-    this.procesarSiguienteNota();
-  }
-}
-
-
-
-getNombreColumnaReal(col: string): string {
-  const partes = col.split('_');
-  return partes[partes.length - 1];
-}
-
-confirmarCerrarActa() {
-    this.dialog.open(ConfirmacionComponent, {
-      data: '¿ Cerrar acta?. Recuerde una vez cerrada el acta ya no podrá editar las notas ni tomar asistencia.',
-    }).afterClosed().subscribe({
-      next: result => {
-        if (result) {
-          this.cerrarActa();
-        }
-      },
-      error: error => console.log(error)
-    })
-  }
-
-  cerrarActa() {
-    this.horarioService.cerrarActa(this.turno.idHorario).subscribe({
-      next: () => {
-        this.snack.open('Acta cerrada correctamente', 'Cerrar', {
-          duration: 2000,
-          panelClass: ['snack-success'],
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom'
-        });
-        this.turno.registroCerrado = true;
-      },
-      error: error => {
-        this.snack.open('Error al cerrar el acta', 'Cerrar', {
-          duration: 2000,
-          panelClass: ['snack-error'],
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
-        });
-      }
-    });
-  }
-
-  tieneNotasVacias(): boolean {
-  if (!this.dataSource?.data?.length) return true;
-  // Recorre cada fila y cada columna de notas
-  for (const row of this.dataSource.data) {
-    for (const col of this.displayedColumns) {
-      if (this.isNotaColumn(col) && (row[col] === null || row[col] === undefined || row[col] === '')) {
-        return true; // Hay al menos una nota vacía
-      }
-    }
-  }
-  return false; // No hay notas vacías
-}
-
- guardarNotaRecuperacion(nota: any, colIndex: number, col: any) {
-  const nuevoValor = nota[col];
-
-  // Inicializa estructuras auxiliares si no existen
-  nota.valoresAnteriores = nota.valoresAnteriores || {};
-  nota.guardando = nota.guardando || {};
-  nota.estadoGuardado = nota.estadoGuardado || {};
-
-  // 1. No guardar si el valor no ha cambiado
-  if (nota.valoresAnteriores[col] === nuevoValor) {
-    return;
-  }
-
-  // 2. Evita múltiples guardados simultáneos por celda
-  if (nota.guardando[col]) {
-    return;
-  }
-
-  nota.guardando[col] = true;
-
-  const notaDto = {
-    ...nota,
-    NombreColumna: this.getNombreColumnaReal(col),
-    valor: nuevoValor,
-    idPeriodo: this.turno.idPeriodo,
-  };
-
-  const esNueva = nota.idNota === 0;
-
-  const manejarExito = (result: any) => {
-    nota.idNota = result.idNota;
-    nota.finalGrade = result.finalGrade;
-    // Mantener el valor actual en el input, no sobrescribir
-    nota.valoresAnteriores[col] = nuevoValor;
-    nota.estadoGuardado[col] = true;
-
-    let index = this.dataSourceRecuperacion.data.findIndex(n => n.idRegistro === notaDto.idRegistro);
-
-    if (esNueva && index === -1) {
-      const yaExiste = this.dataSourceRecuperacion.data.some(n => n.idNota === result.idNota);
-      if (!yaExiste) {
-        this.dataSourceRecuperacion.data.push(result);
-      }
-    } else if (index !== -1) {
-      Object.assign(this.dataSourceRecuperacion.data[index], result);
-    }
-    this.dataSourceRecuperacion._updateChangeSubscription();
-
-    this.snack.open('Nota guardada', 'Cerrar', {
-      panelClass: ['snack-success'],
-      duration: 2000
-    });
-
-    // Limpia el estado visual después de 3 segundos
-    setTimeout(() => {
-      delete nota.estadoGuardado[col];
-    }, 3000);
-  };
-
-  const manejarError = (error: any) => {
-    nota.estadoGuardado[col] = false;
-
-    // No limpiar el estado de error - se mantiene en rojo permanentemente
-  };
-
-  const finalizar = () => {
-    nota.guardando[col] = false;
-  };
-
-  const servicio = esNueva
-    ? this.notasService.guardarNota(notaDto)
-    : this.notasService.actualizarNota(notaDto);
-
-  servicio.subscribe({
-    next: manejarExito,
-    error: manejarError,
-    complete: finalizar
-  });
-}
 
   validarNotaRecuperacion(row: any, col: string, colIndex: number): void {
     const max = this.getValorMaximo(col);
@@ -583,14 +430,17 @@ confirmarCerrarActa() {
       return;
     }
 
-    // ✅ Limpiar el estado de error si la validación es exitosa
+    // Limpiar el estado de error si la validación es exitosa
     if (row.estadoGuardado[col] === false) {
       delete row.estadoGuardado[col];
     }
 
-    // ✅ Marcar como pendiente de guardar y guardar directamente
-    row.estadoGuardado[col] = undefined;
-    this.guardarNotaRecuperacion(row, colIndex, col);
+    // Marcar como nota editada para recuperación
+    const claveUnica = `${row.idRegistro}-${col}-recuperacion`;
+    this.notasEditadas.add(claveUnica);
+
+    // Marcar como pendiente
+    row.estadoGuardado[col] = 'pendiente';
   }
 
   calcularPromedioSinGuardar(row: any, col: string): void {
@@ -609,8 +459,10 @@ confirmarCerrarActa() {
       }
     });
 
-    // Si no hay columnas con valores, no calcular
+    // Si no hay columnas con valores, limpiar el promedio y salir
     if (Object.keys(columnas).length === 0) {
+      row.finalGrade = null;
+      this.dataSource._updateChangeSubscription();
       return;
     }
 
@@ -629,10 +481,6 @@ confirmarCerrarActa() {
         
         // Actualizar la vista para mostrar el nuevo promedio
         this.dataSource._updateChangeSubscription();
-      },
-      error: (error) => {
-        console.error('Error al calcular promedio:', error);
-        // No mostrar error al usuario para no interrumpir el flujo de entrada de datos
       }
     });
   }
@@ -659,9 +507,9 @@ confirmarCerrarActa() {
 
       // Agregar todas las columnas de notas con sus nombres originales del servidor
       this.displayedColumns.forEach(col => {
-        if (col !== 'alumno') // Omitir la columna de alumno ya que ya la agregamos
-          // Usar el nombre original de la columna tal como viene del servidor
+        if (col !== 'alumno') {
           filaExportada[col] = fila[col] || '';
+        }
       });
 
       return filaExportada;
@@ -704,14 +552,8 @@ confirmarCerrarActa() {
   importarExcel(archivo: File): void {
     this.exportExcelService.importarExcel(archivo).then((datos: any[]) => {
       this.procesarDatosImportados(datos);
-    }).catch((error) => {
-      console.error('Error al importar Excel:', error);
-      this.snack.open('Error al procesar el archivo Excel', 'Cerrar', {
-        duration: 3000,
-        panelClass: ['snack-error'],
-        horizontalPosition: 'center',
-        verticalPosition: 'top'
-      });
+    }).catch(() => {
+      // El interceptor maneja el error
     });
   }
 
@@ -750,149 +592,87 @@ confirmarCerrarActa() {
       return;
     }
 
-    // Preparar notas para envío masivo
-    const notasMasivas: any[] = [];
+    let notasImportadas = 0;
+    let erroresImportacion = 0;
 
     datosExcel.forEach((filaExcel) => {
       // Buscar la fila correspondiente en el dataSource por idRegistro
       const filaLocal = this.dataSource.data.find(f => f.idRegistro === filaExcel.idRegistro);
       
       if (!filaLocal) {
-        console.warn('No se encontró registro local para idRegistro:', filaExcel.idRegistro);
+        erroresImportacion++;
         return;
       }
 
-      // Preparar columnas para esta nota
-      const columnas: { [key: string]: any } = {};
-      let tieneColumnas = false;
+      // Inicializar estado si no existe
+      filaLocal.estadoGuardado = filaLocal.estadoGuardado || {};
+      let tieneNotasValidas = false;
 
+      // Procesar cada columna del Excel
       this.displayedColumns.forEach(col => {
         if (this.isNotaColumn(col) && filaExcel.hasOwnProperty(col)) {
           const valorExcel = filaExcel[col];
           
-          // Solo incluir si hay un valor válido en el Excel
+          // Solo procesar si hay un valor válido en el Excel
           if (valorExcel !== null && valorExcel !== undefined && valorExcel !== '') {
             const valorNumerico = Number(valorExcel);
             const valorMaximo = this.getValorMaximo(col);
             
             // Validar el valor
             if (!isNaN(valorNumerico) && valorNumerico >= 0 && valorNumerico <= valorMaximo) {
-              columnas[this.getNombreColumnaReal(col)] = valorNumerico;
-              tieneColumnas = true;
-              
-              // Actualizar también el dataSource local para mostrar los cambios
+              // Actualizar el valor en la fila local
               filaLocal[col] = valorNumerico;
+              
+              // Marcar como nota editada para el guardado masivo
+              const claveUnica = `${filaLocal.idRegistro}-${col}`;
+              this.notasEditadas.add(claveUnica);
+              
+              // Marcar como pendiente (amarillo)
+              filaLocal.estadoGuardado[col] = 'pendiente';
+              
+              tieneNotasValidas = true;
+            } else {
+              // Valor inválido - marcar como error
+              filaLocal.estadoGuardado[col] = false;
+              erroresImportacion++;
             }
           }
         }
       });
 
-      // Si tiene columnas válidas, agregar a la lista de envío masivo
-      if (tieneColumnas) {
-        notasMasivas.push({
-          IdRegistro: filaLocal.idRegistro,
-          IdHorario: filaLocal.idHorario,
-          Codigo: filaLocal.codigo,
-          IdPeriodo: this.turno.idPeriodo,
-          Columnas: columnas
-        });
+      if (tieneNotasValidas) {
+        notasImportadas++;
+        // Calcular promedio para esta fila con las nuevas notas
+        this.calcularPromedioSinGuardar(filaLocal, '');
       }
     });
 
-    if (notasMasivas.length === 0) {
-      this.snack.open('No se encontraron notas válidas para procesar', 'Cerrar', {
-        duration: 3000,
-        panelClass: ['snack-warning'],
-        horizontalPosition: 'center',
-        verticalPosition: 'top'
-      });
-      return;
+    // Actualizar la vista para mostrar los cambios
+    this.dataSource._updateChangeSubscription();
+
+    // Mostrar mensaje de resultado de importación
+    let mensaje = `Importación completada: ${notasImportadas} estudiantes con notas importadas`;
+    if (erroresImportacion > 0) {
+      mensaje += `, ${erroresImportacion} errores encontrados`;
     }
+    mensaje += '. Use "GUARDAR NOTAS" para confirmar los cambios.';
 
-    // Enviar notas masivamente
-   // this.enviarNotasMasivo(notasMasivas);
-  }
-
-  enviarNotasMasivo(notasMasivas: any[]): void {
-    // Mostrar indicador de carga
-    this.snack.open('Procesando notas masivamente...', null, {
-      duration: 0, // Sin tiempo límite
-      panelClass: ['snack-info'],
+    this.snack.open(mensaje, 'Cerrar', {
+      duration: 8000,
+      panelClass: erroresImportacion > 0 ? ['snack-warning'] : ['snack-success'],
       horizontalPosition: 'center',
       verticalPosition: 'bottom'
     });
 
-    this.notasService.guardarNotasMasivo(notasMasivas).subscribe({
-      next: (result: any) => {
-        // Cerrar snackbar de carga
-        this.snack.dismiss();
-
-        // Actualizar el dataSource con los resultados
-        if (result.Resultados) {
-          result.Resultados.forEach((res: any) => {
-            const filaLocal = this.dataSource.data.find(f => f.idRegistro === res.IdRegistro);
-            if (filaLocal && res.IdNota) {
-              filaLocal.idNota = res.IdNota;
-            }
-          });
-        }
-
-        // Actualizar la vista
-        this.dataSource._updateChangeSubscription();
-
-        // Mostrar resultado de importación exitosa
-        console.log('Resultado del procesamiento masivo:', result);
-        let mensaje = ` Excel importado correctamente: Se actualizaron las notas de ${result.TotalProcesadas || notasMasivas.length} alumnos`;
-        if (result.TotalErrores > 0) {
-          mensaje += `, ${result.TotalErrores} errores`;
-        }
-
-        this.snack.open(mensaje, 'Cerrar', {
-          duration: 5000,
-          panelClass: result.TotalErrores > 0 ? ['snack-warning'] : ['snack-success'],
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom'
-        });
-
-        // Si hay errores, mostrarlos en consola para debugging
-        if (result.Errores && result.Errores.length > 0) {
-          console.warn('Errores en procesamiento masivo:', result.Errores);
-        }
-
-        // Limpiar el input file
-        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-        if (fileInput) {
-          fileInput.value = '';
-        }
-
-        // Recargar las notas para obtener los promedios actualizados
-        setTimeout(() => {
-          this.listarNotas(this.turno.idHorario, this.turno.idFormatoNota);
-        }, 1000);
-      },
-      error: (error) => {
-        // Cerrar snackbar de carga
-        this.snack.dismiss();
-        
-        console.error('Error en envío masivo:', error);
-        this.snack.open('Error al procesar las notas masivamente', 'Cerrar', {
-          duration: 5000,
-          panelClass: ['snack-error'],
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
-        });
-
-        // Limpiar el input file
-        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-        if (fileInput) {
-          fileInput.value = '';
-        }
-      }
-    });
+    // Limpiar el input file
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   }
 
   guardarNotasMasivoManual(): void {
-    if (!this.dataSource?.data?.length) {
+    if (!this.dataSource?.data?.length && !this.dataSourceRecuperacion?.data?.length) {
       this.snack.open('No hay notas para guardar', 'Cerrar', {
         duration: 3000,
         panelClass: ['snack-warning'],
@@ -902,44 +682,93 @@ confirmarCerrarActa() {
       return;
     }
 
-    // Recopilar todas las notas que tienen cambios
+    // Recopilar solo las notas que han sido editadas
     const notasMasivas: any[] = [];
 
-    this.dataSource.data.forEach((fila) => {
-      const columnas: { [key: string]: any } = {};
-      let tieneColumnas = false;
+    // Procesar notas regulares
+    if (this.dataSource?.data?.length) {
+      this.dataSource.data.forEach((fila) => {
+        const columnas: { [key: string]: any } = {};
+        let tieneColumnasEditadas = false;
 
-      // Revisar todas las columnas de notas
-      this.displayedColumns.forEach(col => {
-        if (this.isNotaColumn(col)) {
-          const valor = fila[col];
-          
-          // Solo incluir si hay un valor válido
-          if (valor !== null && valor !== undefined && valor !== '') {
-            const valorNumerico = Number(valor);
+        // Revisar solo las columnas que han sido editadas
+        this.displayedColumns.forEach(col => {
+          if (this.isNotaColumn(col)) {
+            const claveUnica = `${fila.idRegistro}-${col}`;
             
-            if (!isNaN(valorNumerico) && valorNumerico >= 0) {
-              columnas[this.getNombreColumnaReal(col)] = valorNumerico;
-              tieneColumnas = true;
+            // Solo incluir si esta nota específica fue editada
+            if (this.notasEditadas.has(claveUnica)) {
+              const valor = fila[col];
+              
+              // Solo incluir si hay un valor válido
+              if (valor !== null && valor !== undefined && valor !== '') {
+                const valorNumerico = Number(valor);
+                
+                if (!isNaN(valorNumerico) && valorNumerico >= 0) {
+                  columnas[this.getNombreColumnaReal(col)] = valorNumerico;
+                  tieneColumnasEditadas = true;
+                }
+              }
             }
           }
+        });
+
+        // Si tiene columnas editadas válidas, agregar a la lista
+        if (tieneColumnasEditadas) {
+          notasMasivas.push({
+            IdRegistro: fila.idRegistro,
+            IdHorario: fila.idHorario,
+            Codigo: fila.codigo,
+            IdPeriodo: this.turno.idPeriodo,
+            Columnas: columnas
+          });
         }
       });
+    }
 
-      // Si tiene columnas válidas, agregar a la lista
-      if (tieneColumnas) {
-        notasMasivas.push({
-          IdRegistro: fila.idRegistro,
-          IdHorario: fila.idHorario,
-          Codigo: fila.codigo,
-          IdPeriodo: this.turno.idPeriodo,
-          Columnas: columnas
+    // Procesar notas de recuperación
+    if (this.dataSourceRecuperacion?.data?.length) {
+      this.dataSourceRecuperacion.data.forEach((fila) => {
+        const columnas: { [key: string]: any } = {};
+        let tieneColumnasEditadas = false;
+
+        // Revisar solo las columnas que han sido editadas (con sufijo -recuperacion)
+        this.displayedColumnsRecuperacion.forEach(col => {
+          if (this.isNotaColumn(col)) {
+            const claveUnica = `${fila.idRegistro}-${col}-recuperacion`;
+            
+            // Solo incluir si esta nota específica fue editada
+            if (this.notasEditadas.has(claveUnica)) {
+              const valor = fila[col];
+              
+              // Solo incluir si hay un valor válido
+              if (valor !== null && valor !== undefined && valor !== '') {
+                const valorNumerico = Number(valor);
+                
+                if (!isNaN(valorNumerico) && valorNumerico >= 0) {
+                  columnas[this.getNombreColumnaReal(col)] = valorNumerico;
+                  tieneColumnasEditadas = true;
+                }
+              }
+            }
+          }
         });
-      }
-    });
+
+        // Si tiene columnas editadas válidas, agregar a la lista
+        if (tieneColumnasEditadas) {
+          notasMasivas.push({
+            IdRegistro: fila.idRegistro,
+            IdHorario: fila.idHorario,
+            Codigo: fila.codigo,
+            IdPeriodo: this.turno.idPeriodo,
+            Columnas: columnas
+          });
+        }
+      });
+    }
 
     if (notasMasivas.length === 0) {
-      this.snack.open('No se encontraron notas válidas para guardar', 'Cerrar', {
+      this.snack.open('No hay notas editadas para guardar', 'Cerrar', {
         duration: 3000,
         panelClass: ['snack-warning'],
         horizontalPosition: 'center',
@@ -957,28 +786,108 @@ confirmarCerrarActa() {
   }
 
   tieneNotasPendientes(): boolean {
-    // Verificar si hay notas en la cola o cambios sin guardar
-    if (this.colaNotasPendientes.length > 0) {
-      return true;
-    }
+    // Verificar si hay notas editadas (regulares o de recuperación)
+    return this.notasEditadas.size > 0;
+  }
 
-    // Verificar si hay notas con valores válidos en el dataSource
-    if (!this.dataSource?.data?.length) {
-      return false;
-    }
+  enviarNotasMasivo(notasMasivas: any[]): void {
+    // Mostrar indicador de carga
+    this.snack.open('Procesando notas masivamente...', null, {
+      duration: 0,
+      panelClass: ['snack-info'],
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom'
+    });
 
-    for (const fila of this.dataSource.data) {
-      for (const col of this.displayedColumns) {
-        if (this.isNotaColumn(col)) {
-          const valor = fila[col];
-          if (valor !== null && valor !== undefined && valor !== '' && !isNaN(Number(valor))) {
-            return true;
-          }
+    this.notasService.guardarNotasMasivo(notasMasivas).subscribe({
+      next: (result: any) => {
+        // Cerrar snackbar de carga
+        this.snack.dismiss();
+
+        // Actualizar el dataSource con los resultados (notas regulares)
+        if (result.Resultados) {
+          result.Resultados.forEach((res: any) => {
+            // Buscar en notas regulares
+            const filaLocal = this.dataSource.data.find(f => f.idRegistro === res.IdRegistro);
+            if (filaLocal && res.IdNota) {
+              filaLocal.idNota = res.IdNota;
+              filaLocal.finalGrade = res.FinalGrade || filaLocal.finalGrade;
+              
+              // Marcar todas las columnas de esta fila como guardadas exitosamente
+              this.displayedColumns.forEach(col => {
+                if (this.isNotaColumn(col) && filaLocal.estadoGuardado && filaLocal.estadoGuardado[col] === 'pendiente') {
+                  filaLocal.estadoGuardado[col] = true;
+                  
+                  // Limpiar estado visual después de 3 segundos
+                  setTimeout(() => {
+                    if (filaLocal.estadoGuardado && filaLocal.estadoGuardado[col] === true) {
+                      delete filaLocal.estadoGuardado[col];
+                    }
+                  }, 3000);
+                }
+              });
+            }
+
+            // Buscar en notas de recuperación
+            const filaRecuperacion = this.dataSourceRecuperacion.data.find(f => f.idRegistro === res.IdRegistro);
+            if (filaRecuperacion && res.IdNota) {
+              filaRecuperacion.idNota = res.IdNota;
+              filaRecuperacion.finalGrade = res.FinalGrade || filaRecuperacion.finalGrade;
+              
+              // Marcar todas las columnas de esta fila como guardadas exitosamente
+              this.displayedColumnsRecuperacion.forEach(col => {
+                if (this.isNotaColumn(col) && filaRecuperacion.estadoGuardado && filaRecuperacion.estadoGuardado[col] === 'pendiente') {
+                  filaRecuperacion.estadoGuardado[col] = true;
+                  
+                  // Limpiar estado visual después de 3 segundos
+                  setTimeout(() => {
+                    if (filaRecuperacion.estadoGuardado && filaRecuperacion.estadoGuardado[col] === true) {
+                      delete filaRecuperacion.estadoGuardado[col];
+                    }
+                  }, 3000);
+                }
+              });
+            }
+          });
+        }
+
+        // Limpiar las notas editadas después del guardado exitoso
+        this.notasEditadas.clear();
+
+        // Actualizar ambas vistas
+        this.dataSource._updateChangeSubscription();
+        this.dataSourceRecuperacion._updateChangeSubscription();
+
+        // Mostrar resultado exitoso
+        let mensaje = `Se guardaron las notas de ${result.TotalProcesadas || notasMasivas.length} registros correctamente`;
+        if (result.TotalErrores > 0) {
+          mensaje += `, ${result.TotalErrores} errores`;
+        }
+
+        this.snack.open(mensaje, 'Cerrar', {
+          duration: 5000,
+          panelClass: result.TotalErrores > 0 ? ['snack-warning'] : ['snack-success'],
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom'
+        });
+
+        // Limpiar el input file
+        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+        if (fileInput) {
+          fileInput.value = '';
+        }
+      },
+      error: () => {
+        // Cerrar snackbar de carga - el interceptor maneja el mensaje de error
+        this.snack.dismiss();
+        
+        // Limpiar el input file
+        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+        if (fileInput) {
+          fileInput.value = '';
         }
       }
-    }
-
-    return false;
+    });
   }
 
   navegarADetalleAlumno(row: any): void {
@@ -986,14 +895,8 @@ confirmarCerrarActa() {
       // Guardar estado antes de navegar
       this.guardarEstadoActual();
       
-      this.router.navigate(['/detalle-alumno', row.codigo]).catch(error => {
-        console.error('Error de navegación:', error);
-        this.snack.open('Error al navegar al detalle del alumno', 'Cerrar', {
-          duration: 3000,
-          panelClass: ['snack-error'],
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
-        });
+      this.router.navigate(['/detalle-alumno', row.codigo]).catch(() => {
+        // El interceptor maneja el error de navegación si es necesario
       });
     } else {
       this.snack.open('No se pudo obtener el código del alumno', 'Cerrar', {
