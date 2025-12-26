@@ -63,7 +63,8 @@
       "main": "main.js"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "build/Cultu25.ico"
     },
     "publish": [
       {

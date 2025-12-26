@@ -401,7 +401,7 @@ export class AsistenciaAlumnosComponent implements OnInit, OnDestroy, AfterViewI
       next: (datos: any[]) => {
         this.clasesRecuperacion = datos.map(d => ({
           ...d,
-          estado: d.estado === null ? 'P' : d.estado
+          estado: d.estado === null ? '' : d.estado
         }));
         this.dataSourceRecuperacion.data = this.clasesRecuperacion;
         

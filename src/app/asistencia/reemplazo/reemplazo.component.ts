@@ -119,13 +119,13 @@ export class ReemplazoComponent {
 
   entrada() {
     let objentrada = Object.assign({} , this.asistenciaForm.getRawValue()); 
-    // if (objentrada.modalidad == 'Presencial')
-    // {
-    //   this.snakBar.open('Es un horario presencial debes hacerlo desde la aplicación de escritorio' , 'OK' ,  {
-    //      verticalPosition: 'top',
-    //     panelClass: ['snack-error']
-    //   });
-    // }else {
+    if (objentrada.modalidad == 'Presencial')
+    {
+      this.snakBar.open('Es un horario presencial debes hacerlo desde la aplicación de escritorio' , 'OK' ,  {
+         verticalPosition: 'top',
+        panelClass: ['snack-error']
+      });
+    }else {
      
       this.asistenciaDocenteService.EntradaReemplazo(objentrada).subscribe(() => {
         this.mostrarrefresh = false;
@@ -136,18 +136,18 @@ export class ReemplazoComponent {
         panelClass: ['snack-success']
       });
       })
-   // }
+    }
   }
 
   salida() {
     let objsalida = Object.assign({} , this.asistenciaForm.getRawValue());
-    //   if (objsalida.modalidad == 'Presencial')
-    // {
-    //   this.snakBar.open('Es un horario presencial debes hacerlo desde la aplicación de escritorio' , 'OK' ,  {
-    //      verticalPosition: 'top',
-    //     panelClass: ['snack-error']
-    //   });
-    // }else {
+      if (objsalida.modalidad == 'Presencial')
+    {
+      this.snakBar.open('Es un horario presencial debes hacerlo desde la aplicación de escritorio' , 'OK' ,  {
+         verticalPosition: 'top',
+        panelClass: ['snack-error']
+      });
+    }else {
 
     
       this.asistenciaDocenteService.SalidaReemplazo(objsalida).subscribe(() => {
@@ -159,7 +159,7 @@ export class ReemplazoComponent {
           this.mostrarrefresh = false;
           this.obtenerHorario();
         })
-  //}
+  }
 }
 
 }

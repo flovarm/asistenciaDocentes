@@ -74,14 +74,14 @@ export const routes: Routes = [
                 },
                 component: AgenteVirtualComponent
             },
-            {
-                path: 'Tutoriales',
-                title: 'Tutoriales',
-                data: {
-                    'icon': 'play_lesson', 
-                },
-                loadComponent: () => import('./tutoriales/tutoriales.component').then(c => c.TutorialesComponent)
-            }
+            // {
+            //     path: 'Tutoriales',
+            //     title: 'Tutoriales',
+            //     data: {
+            //         'icon': 'play_lesson', 
+            //     },
+            //     loadComponent: () => import('./tutoriales/tutoriales.component').then(c => c.TutorialesComponent)
+            // }
         ]
     },
     {
