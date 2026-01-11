@@ -9,6 +9,8 @@ import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ActualizarProfesorDialogComponent } from './actualizar-profesor-dialog.component';
 import { MatButtonModule } from '@angular/material/button';
+import { EventoService } from '../_services/evento.service';
+import { MatIcon, MatIconModule } from "@angular/material/icon";
 
 
 @Component({
@@ -19,7 +21,8 @@ import { MatButtonModule } from '@angular/material/button';
     InitialsPipe,
     MatDividerModule,
     FormsModule,
-    MatButtonModule
+    MatButtonModule,
+    MatIconModule
 ],
   templateUrl: './bienvenido.component.html',
   styleUrl: './bienvenido.component.scss'
@@ -31,7 +34,8 @@ export class BienvenidoComponent {
   profesorEdit: any = {};
   mensajeActualizacion: string = '';
   usuarioLogeado: Profesor | null = null;
-
+  eventos: any[] = [];
+  private eventoService = inject(EventoService);
   constructor(
     private profesorService: ProfesorService,
     private dialog: MatDialog
@@ -41,6 +45,7 @@ export class BienvenidoComponent {
 
   ngOnInit(): void {
     this.obtenerUsuario();
+    this.eventosDesdeAhora();
   }
 
   obtenerUsuario() {
@@ -69,4 +74,10 @@ export class BienvenidoComponent {
     this.profesorEdit = {};
     this.mensajeActualizacion = '';
   }
+
+   eventosDesdeAhora() {
+     this.eventoService.listarEventosDesdeAhora().subscribe(eventos => {
+       this.eventos = eventos as any[];
+     });
+  } 
 }

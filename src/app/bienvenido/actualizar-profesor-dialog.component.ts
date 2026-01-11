@@ -21,7 +21,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatSelectModule,
     MatDialogModule,
     MatButtonModule,
-    MatSelectModule
+    MatSelectModule,
+    MatIconModule
   ],
   templateUrl: './actualizar-profesor-dialog.component.html'
 })

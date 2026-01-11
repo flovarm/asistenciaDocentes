@@ -1,7 +1,7 @@
 <app-navbar (toggleSidenav)="abrirSidenav(drawer)"></app-navbar>
 <mat-sidenav-container class="mat-drawer-container" autosize apparence="outlined">
-  <mat-sidenav #drawer class="sidenav mt-1 mb-1" [mode]="isMobile() ? 'over' : 'side'" [(opened)]="opened"
-  [fixedInViewport]="isMobile()" fixedTopGap="56" [style.width]="opened ? '240px' : '60px'" class="mt-4">
+  <mat-sidenav #drawer class="sidenav mb-1 border-right" [mode]="isMobile() ? 'over' : 'side'" [(opened)]="opened"
+  [fixedInViewport]="isMobile()" fixedTopGap="56" [style.width]="opened ? '240px' : '60px'">
   
   <mat-nav-list>      
     @for(ruta of menuItems; track ruta) {

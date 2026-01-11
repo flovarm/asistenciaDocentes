@@ -10,7 +10,7 @@
     height: 87%;
       @include mat.sidenav-overrides((
           container-width: 250px,
-          container-background-color: var(--mat-sys-surface),
+          container-background-color: var(--mat-sys-container),
           container-text-color: var(--mat-sys-primary),
       ));
   }
@@ -65,7 +65,7 @@
 
     @include mat.list-overrides((
        list-item-label-text-color: var(--mat-sys-primary),
-         list-item-container-color: var(--mat-sys-surface-container-high),
+         list-item-container-color: var(--mat-sys-primary-container),
          list-item-leading-icon-color:var(--mat-sys-primary),
           list-item-hover-label-text-color:var(--mat-sys-primary),
          list-item-focus-label-text-color:var(--mat-sys-primary),

@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { RouterModule } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { EventoService } from '../_services/evento.service';
 
 @Component({
   selector: 'app-home',
@@ -37,6 +38,7 @@ export class HomeComponent implements OnInit{
   .filter(route => !route.path?.includes(':'));
   private readonly _mobileQuery: MediaQueryList;
   private readonly _mobileQueryListener: () => void;
+  eventos: any[] = [];  
   @ViewChild('drawer')
   sidenav!: MatSidenav;
   abrirSidenav(event: any) {
@@ -61,4 +63,5 @@ export class HomeComponent implements OnInit{
   ngOnInit(): void {
     this._mobileQuery.removeEventListener('change', this._mobileQueryListener);
   }
+ 
 }

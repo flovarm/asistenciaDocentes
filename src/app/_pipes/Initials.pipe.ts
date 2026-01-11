@@ -10,6 +10,6 @@ export class InitialsPipe implements PipeTransform {
     const parts = fullName.trim().split(' ');
     const firstNameInitial = parts[0]?.charAt(0).toUpperCase() || '';
     const lastNameInitial = parts[parts.length - 1]?.charAt(0).toUpperCase() || '';
-    return `${lastNameInitial}${firstNameInitial}`;
+    return `${firstNameInitial}${lastNameInitial}`;
   }
 }

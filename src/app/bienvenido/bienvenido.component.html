@@ -1,39 +1,83 @@
-<div class="container p-5">
-  <div class="mt-5 d-flex align-items-center mb-3 h-100 justify-content-center">
-    <!-- @if (usuarioLogeado?.fotoUrl) {
-      <img [src]="usuarioLogeado.fotoUrl" alt="Foto de usuario" class="rounded-circle" width="150" height="150" style="object-fit: cover;">
-    } @else { -->
-      <div class="rounded-circle iniciales text-white d-flex align-items-center justify-content-center" >
-      {{ usuarioLogeado?.nombreCompleto | initials}}
-        
-      </div>
-    <!-- } -->
-  <div class="d-flex flex-column">
-    <span class="ms-3">
-      <h3 class="mb-0"> <strong>{{usuarioLogeado?.nombreCompleto | titlecase}}</strong> </h3>
-    </span>
-    <span class="ms-3">
-      <p class="mb-0"> Usuario: {{usuarioLogeado?.userName}}</p>
-    </span>
-  </div>
-</div>
-<div class="row mt-5 d-flex justify-content-center">
-  <div class="col-12 col-md-4">
-    <mat-divider></mat-divider>
-    <div class="d-flex flex-column align-items-start">
-      <strong class="mt-4 ml-2">Nro Celular:</strong>
-      <p class="p-0"> {{usuarioLogeado?.celular}}</p>
-    </div>
-  </div>
-  <div class="col-12 col-md-4">
-    <mat-divider ></mat-divider>
-    <div class="d-flex flex-column align-items-start" style="height: 200px;">
-      <strong class="mt-4 ml-2">Correo:</strong>
-      <p class="p-0"> {{usuarioLogeado?.email}}</p>
-    </div>
-  </div>
-</div>
-<div class="d-flex justify-content-center mt-4">
-  <button mat-flat-button (click)="abrirModalActualizar()">Actualizar datos</button>
-</div>
+<section>
 
+  <div class="container p-3">
+    <div class="mt-3 d-flex align-items-center mb-3 h-100 justify-content-center">
+      <!-- @if (usuarioLogeado?.fotoUrl) {
+        <img [src]="usuarioLogeado.fotoUrl" alt="Foto de usuario" class="rounded-circle" width="150" height="150" style="object-fit: cover;">
+      } @else { -->
+        <div class="rounded-circle iniciales text-white d-flex align-items-center justify-content-center" >
+        {{ usuarioLogeado?.nombreCompleto | initials}}
+          
+        </div>
+      <!-- } -->
+    <div class="d-flex flex-column">
+      <span class="ms-3">
+        <h3 class="mb-0"> <strong>{{usuarioLogeado?.nombreCompleto | titlecase}}</strong> </h3>
+      </span>
+      <span class="ms-3">
+        <p class="mb-0"> Usuario: {{usuarioLogeado?.userName}}</p>
+      </span>
+    </div>
+  </div>
+  <div class="row mt-3 d-flex justify-content-center">
+    <div class="col-12 col-md-4">
+      <mat-divider></mat-divider>
+      <div class="d-flex flex-column align-items-start">
+        <strong class="mt-2 ml-2">Nro Celular:</strong>
+        <p class="p-0"> {{usuarioLogeado?.celular}}</p>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <mat-divider ></mat-divider>
+      <div class="d-flex flex-column align-items-start" style="height: 150px;">
+        <strong class="mt-2 ml-2">Correo:</strong>
+        <p class="p-0"> {{usuarioLogeado?.email}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex justify-content-center mt-2">
+    <button mat-flat-button (click)="abrirModalActualizar()">Actualizar datos</button>
+  </div>
+</div>
+</section>
+<section>
+
+  <div class="eventos-container">
+    <h2 class="mt-2 mb-3 text-center proximos-eventos">Próximos Eventos</h2>
+    @if (eventos.length === 0) {
+      <div class="text-center">
+        <p>No hay eventos próximos.</p>
+      </div>
+    }
+    @for (evento of eventos; track evento.id) {
+      <div class="evento-card d-flex justify-content-between mb-3 p-3 border rounded shadow-sm bg-gradient" style="background: var(--mat-sys-primary-container);">
+        <div class="d-flex align-items-center">
+          <!-- Cuadro de fecha -->
+          <div class="fecha-cuadro rounded text-center p-3 me-3" style="min-width: 80px;">
+            <div class="dia" style="font-size: 24px; line-height: 1;">
+              {{ evento.fechaEvento | date:'d' }}
+            </div>
+            <div class="mes text-muted fw-semibold" style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">
+              {{ evento.fechaEvento | date:'MMM' }}
+            </div>
+          </div>
+          
+          <!-- Información del evento -->
+          <div class="evento-info  flex-grow-1">
+            <h4 class="mb-1 titulo-evento">{{ evento.titulo | titlecase}}</h4>
+            <p class="mb-1 opacity-75">
+              <i class="fas fa-clock me-1"></i>
+              {{ evento.fechaEvento | date: 'h:mm a' }}
+            </p>
+            <!-- <p class="mb-0 small opacity-75">{{ evento.descripcion }}</p> -->
+          </div>
+        </div>
+        <div class="mat-3 d-flex align-items-center">
+          <button mat-stroked-button>
+            Ver Más <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</section>  

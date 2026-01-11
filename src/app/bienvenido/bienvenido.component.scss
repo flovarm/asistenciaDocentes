@@ -6,3 +6,29 @@
     height: 100px;
     text-align: center;
 }
+
+.proximos-eventos{
+    color: var(--mat-sys-container);
+}
+
+.eventos-container{
+    background-color: var(--mat-sys-surface-container-low);
+    padding: 1rem;
+}
+
+.fecha-cuadro {
+    background-color: var(--mat-sys-tertiary-container);
+    color: var(--mat-sys-primary);
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 900;
+    width: 80px;
+}
+
+.titulo-evento {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-top: 10px;
+    color: var(--mat-sys-primary);
+}
