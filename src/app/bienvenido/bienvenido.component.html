@@ -1,4 +1,6 @@
-<section>
+<div class="row">
+  <div class="col-12 col-md-8">
+<section class="info-container">
 
   <div class="container p-3">
     <div class="mt-3 d-flex align-items-center mb-3 h-100 justify-content-center">
@@ -7,27 +9,27 @@
       } @else { -->
         <div class="rounded-circle iniciales text-white d-flex align-items-center justify-content-center" >
         {{ usuarioLogeado?.nombreCompleto | initials}}
-          
+
         </div>
       <!-- } -->
     <div class="d-flex flex-column">
       <span class="ms-3">
         <h3 class="mb-0"> <strong>{{usuarioLogeado?.nombreCompleto | titlecase}}</strong> </h3>
       </span>
-      <span class="ms-3">
+      <!-- <span class="ms-3">
         <p class="mb-0"> Usuario: {{usuarioLogeado?.userName}}</p>
-      </span>
+      </span> -->
     </div>
   </div>
   <div class="row mt-3 d-flex justify-content-center">
-    <div class="col-12 col-md-4">
+    <!-- <div class="col-12 col-md-4">
       <mat-divider></mat-divider>
       <div class="d-flex flex-column align-items-start">
         <strong class="mt-2 ml-2">Nro Celular:</strong>
         <p class="p-0"> {{usuarioLogeado?.celular}}</p>
       </div>
-    </div>
-    <div class="col-12 col-md-4">
+    </div> -->
+    <div class="col-12 col-md-6">
       <mat-divider ></mat-divider>
       <div class="d-flex flex-column align-items-start" style="height: 150px;">
         <strong class="mt-2 ml-2">Correo:</strong>
@@ -40,44 +42,112 @@
   </div>
 </div>
 </section>
-<section>
+<div class="col-12 container-archivos p-3">
+<section class="archivos-container">
+  <h5 class="mb-3 text-center proximos-eventos">Archivos Académicos</h5>
 
-  <div class="eventos-container">
-    <h2 class="mt-2 mb-3 text-center proximos-eventos">Próximos Eventos</h2>
-    @if (eventos.length === 0) {
-      <div class="text-center">
-        <p>No hay eventos próximos.</p>
-      </div>
-    }
-    @for (evento of eventos; track evento.id) {
-      <div class="evento-card d-flex justify-content-between mb-3 p-3 border rounded shadow-sm bg-gradient" style="background: var(--mat-sys-primary-container);">
-        <div class="d-flex align-items-center">
-          <!-- Cuadro de fecha -->
-          <div class="fecha-cuadro rounded text-center p-3 me-3" style="min-width: 80px;">
-            <div class="dia" style="font-size: 24px; line-height: 1;">
-              {{ evento.fechaEvento | date:'d' }}
-            </div>
-            <div class="mes text-muted fw-semibold" style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">
-              {{ evento.fechaEvento | date:'MMM' }}
-            </div>
-          </div>
-          
-          <!-- Información del evento -->
-          <div class="evento-info  flex-grow-1">
-            <h4 class="mb-1 titulo-evento">{{ evento.titulo | titlecase}}</h4>
-            <p class="mb-1 opacity-75">
-              <i class="fas fa-clock me-1"></i>
-              {{ evento.fechaEvento | date: 'h:mm a' }}
-            </p>
-            <!-- <p class="mb-0 small opacity-75">{{ evento.descripcion }}</p> -->
-          </div>
+  @if (archivosAcademicos.length > 0) {
+  <div class="carrusel-wrapper">
+    <button
+      class="nav-btn prev-btn"
+      (click)="anteriorArchivos()"
+      [disabled]="currentIndex === 0">
+      &#8249;
+    </button>
+
+    <div class="carrusel-content">
+      @for (archivo of archivosVisibles; track archivo.id) {
+      <div class="archivo-card">
+        <div class="archivo-info">
+          <h6 class="archivo-nombre">{{ archivo.nombre }}</h6>
+          <p class="archivo-descripcion">{{ archivo.descripcion }}</p>
+          <small class="archivo-fecha">
+            Creado: {{ formatearFecha(archivo.fechaCreacion) }}
+          </small>
         </div>
-        <div class="mat-3 d-flex align-items-center">
-          <button mat-stroked-button>
-            Ver Más <mat-icon>arrow_forward</mat-icon>
+        <div class="archivo-acciones">
+          <button class="btn-ver" (click)="abrirPDF(archivo.urlPdf)">
+            <mat-icon>picture_as_pdf</mat-icon>
+            Ver PDF
           </button>
         </div>
       </div>
+      }
+    </div>
+
+    <button
+      class="nav-btn next-btn"
+      (click)="siguienteArchivos()"
+      [disabled]="currentIndex >= archivosAcademicos.length - itemsPorPagina">
+      &#8250;
+    </button>
+  </div>
+
+  @if (archivosAcademicos.length > itemsPorPagina) {
+  <div class="indicadores">
+    @for (dot of dots; track $index) {
+    <span
+      class="indicador"
+      [class.active]="$index === currentPage"
+      (click)="irAPaginaArchivos($index)">
+    </span>
     }
   </div>
-</section>  
+  }
+
+  } @else {
+    <div class="no-archivos">
+      <p class="text-center">No hay archivos académicos disponibles</p>
+    </div>
+  }
+
+</section>
+</div>
+<section>
+
+  <div class="eventos-container">
+
+        <h2 class="mt-2 mb-3 text-center proximos-eventos">Próximos Eventos</h2>
+        @for (evento of eventos; track evento.id) {
+          <div class="evento-card d-flex justify-content-between mb-3 p-3 border rounded shadow-sm bg-gradient" style="background: var(--mat-sys-primary-container);">
+            <div class="d-flex align-items-center">
+              <!-- Cuadro de fecha -->
+              <div class="fecha-cuadro rounded text-center p-3 me-3" style="min-width: 80px; height: 80px;">
+
+                  <div class="dia" style="font-size: 24px; line-height: 1;">
+                    {{ evento.fechaEvento | date:'d' }}
+                  </div>
+                  <div class="mes text-muted fw-semibold" style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">
+                    {{ evento.fechaEvento | date:'MMM' }}
+                  </div>
+
+              </div>
+
+              <!-- Información del evento -->
+              <div class="evento-info  flex-grow-1">
+                <h4 class="mb-1 titulo-evento">{{ evento.titulo | titlecase}}</h4>
+                <p class="mb-1 opacity-75">
+                  <i class="fas fa-clock me-1"></i>
+                  {{ evento.fechaEvento | date: 'h:mm a' }}
+                </p>
+                <!-- <p class="mb-0 small opacity-75">{{ evento.descripcion }}</p> -->
+              </div>
+            </div>
+            <div class="mat-3 d-flex align-items-center">
+              <button mat-stroked-button (click)="abrirDialogEvento(evento)">
+                Ver Más <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </div>
+          </div>
+        } @empty {
+          <div class="sin-eventos">
+            <p class="text-center">No hay eventos próximos.</p>
+          </div>
+        }
+      </div>
+    </section>
+  </div>
+  <div class="col-12 col-md-4">
+   <app-notificaciones></app-notificaciones>
+  </div>
+</div>

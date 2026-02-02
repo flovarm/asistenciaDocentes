@@ -56,19 +56,13 @@ import { AsistenciaAlumnoService } from '../../_services/asistenciaAlumno.servic
                 </th>
                 <td
                   [ngClass]="{
-                    'text-success': asistencia[fecha] === 'P',
-                    'text-danger': asistencia[fecha] === 'A',
-                    'text-warning': asistencia[fecha] === 'T',
+                    'text-success': getEstadoPrincipal(asistencia[fecha]) === 'P',
+                    'text-danger': getEstadoPrincipal(asistencia[fecha]) === 'A',
+                    'text-warning': getEstadoPrincipal(asistencia[fecha]) === 'T',
                     'asistencia-right': true
                   }"
                 >
-                  {{
-                    asistencia[fecha] === 'P' ? 'Asistió' :
-                    asistencia[fecha] === 'A' ? 'Falta' :
-                    asistencia[fecha] === 'T' ? 'Tardanza' :
-                     asistencia[fecha]  === 'F' ? 'No se registró' :
-                    (asistencia[fecha] === '' || asistencia[fecha] === undefined || asistencia[fecha] === null ? 'No se registró' : asistencia[fecha])
-                  }}
+                  {{ getTextoEstado(asistencia[fecha]) }}
                   <mat-divider></mat-divider>
                 </td>
               </tr>
@@ -83,18 +77,13 @@ import { AsistenciaAlumnoService } from '../../_services/asistenciaAlumno.servic
                   </th>
                   <td
                     [ngClass]="{
-                      'text-success': rec.estado === 'P',
-                      'text-danger': rec.estado === 'A',
-                      'text-warning': rec.estado === 'T',
+                      'text-success': getEstadoPrincipal(rec.estado) === 'P',
+                      'text-danger': getEstadoPrincipal(rec.estado) === 'A',
+                      'text-warning': getEstadoPrincipal(rec.estado) === 'T',
                       'asistencia-right': true
                     }"
                   >
-                    {{
-                      rec.estado === 'P' ? 'Asistió' :
-                      rec.estado === 'A' ? 'Falta' :
-                      rec.estado === 'T' ? 'Tardanza' :
-                     (rec.estado === '' || rec.estado === undefined || rec.estado === null || rec.estado === 'F' ? 'No se registró' : rec.estado)
-                    }}
+                    {{ getTextoEstado(rec.estado) }}
                     <mat-divider></mat-divider>
                   </td>
                 </tr>
@@ -246,6 +235,60 @@ export class NotasDetalleDialogComponent {
     this.loadAsistencia();
   }
 
+  /**
+   * Parsea el estado de asistencia en formato "T - 15" donde T es el estado y 15 son los minutos
+   */
+  public parseEstadoAsistencia(estado: string): { estado: string, minutos?: number } {
+    if (!estado || estado === '') {
+      return { estado: '' };
+    }
+    
+    // Si contiene " - ", parsear estado y minutos
+    if (estado.includes(' - ')) {
+      const partes = estado.split(' - ');
+      const estadoPrincipal = partes[0].trim();
+      const minutos = parseInt(partes[1].trim());
+      
+      return { estado: estadoPrincipal, minutos: isNaN(minutos) ? undefined : minutos };
+    }
+    
+    // Solo estado sin minutos
+    return { estado: estado };
+  }
+
+  /**
+   * Obtiene el texto a mostrar para un estado de asistencia
+   */
+  public getTextoEstado(estado: string): string {
+    const parsed = this.parseEstadoAsistencia(estado);
+    
+    switch (parsed.estado) {
+      case 'P':
+        return 'Asistió';
+      case 'T':
+        if (parsed.minutos && parsed.minutos > 0) {
+          return `Tardanza - ${parsed.minutos} min`;
+        }
+        return 'Tardanza';
+      case 'A':
+        return 'Falta';
+      case 'F':
+        return 'No se registró';
+      default:
+        if (estado === '' || estado === undefined || estado === null) {
+          return 'No se registró';
+        }
+        return estado;
+    }
+  }
+
+  /**
+   * Obtiene solo el estado principal sin minutos
+   */
+  public getEstadoPrincipal(estado: string): string {
+    return this.parseEstadoAsistencia(estado).estado;
+  }
+
   private loadAsistencia() {
     const idHorario = this.data?.element?.idHorario ?? this.data?.element?.IdHorario;
     const codigo = this.data?.element?.codigo ?? this.data?.element?.codigo;
@@ -317,9 +360,10 @@ export class NotasDetalleDialogComponent {
     if (!asistencia) return { asistio: 0, tardanza: 0, falta: 0 };
     let asistio = 0, tardanza = 0, falta = 0;
     Object.values(asistencia).forEach(valor => {
-      if (valor === 'P') asistio++;
-      else if (valor === 'T') tardanza++;
-      else if (valor === 'A') falta++;
+      const estadoPrincipal = this.getEstadoPrincipal(valor);
+      if (estadoPrincipal === 'P') asistio++;
+      else if (estadoPrincipal === 'T') tardanza++;
+      else if (estadoPrincipal === 'A') falta++;
     });
     return { asistio, tardanza, falta };
   });

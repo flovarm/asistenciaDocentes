@@ -1,5 +1,62 @@
 <app-titulo title="Asistencia Alumnos" icon="edit_note"></app-titulo>
 
+<!-- Sección Código de Plataforma -->
+<!-- @if (turno) {
+<mat-card class="p-3 mb-2" appearance="outlined">
+    <mat-card-subtitle class="d-flex align-items-center">
+        <mat-icon class="me-2">code</mat-icon>
+        Código de Plataforma
+    </mat-card-subtitle>
+
+    @if (cargandoCodigoPlataforma) {
+        <div class="d-flex align-items-center justify-content-center py-3">
+            <mat-icon class="spinning me-2">refresh</mat-icon>
+            <span>Cargando código de plataforma...</span>
+        </div>
+    } @else if (codigoPlataforma) {
+        <div class="codigo-plataforma-info">
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="info-item">
+                        <mat-icon class="info-icon">code</mat-icon>
+                        <div class="info-content">
+                            <strong>Código de Plataforma:</strong>
+                            <span class="codigo-text">{{ codigoPlataforma.codigo }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="info-item">
+                        <mat-icon class="info-icon">person</mat-icon>
+                        <div class="info-content">
+                            <strong>Código Profesor:</strong>
+                            <span class="codigo-text">{{ codigoPlataforma.codigoTeacher || 'No especificado' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-12">
+                    <button mat-stroked-button color="primary" (click)="abrirModalCodigoPlataforma()">
+                        <mat-icon>edit</mat-icon>
+                        Editar Código
+                    </button>
+                </div>
+            </div>
+        </div>
+    } @else {
+        <div class="no-codigo-info text-center py-3">
+            <mat-icon class="large-icon mb-2">code_off</mat-icon>
+            <p class="mb-2">No hay código de plataforma registrado para este horario</p>
+            <button mat-raised-button color="primary" (click)="abrirModalCodigoPlataforma()">
+                <mat-icon>add</mat-icon>
+                Agregar Código de Plataforma
+            </button>
+        </div>
+    }
+</mat-card>
+} -->
+
 <mat-card class="p-3">
     <mat-card-subtitle>Obtener Asistencias</mat-card-subtitle>
     <form>
@@ -24,6 +81,19 @@
                     </mat-select>
                 </mat-form-field>
             </div>
+            @if(codigoPlataforma) {
+              <div class="col-12 col-md-4">
+                <p class="códigoPlataforma">Código tarea MyLab:  {{codigoPlataforma.codigo}}  <button matIconButton (click)="abrirModalCodigoPlataforma()"> <mat-icon>edit</mat-icon> </button></p>
+              </div>
+            }@else {
+            <div class="col-12 col-md-4 mt-2">
+              <button mat-raised-button color="primary" (click)="abrirModalCodigoPlataforma()">
+                  <mat-icon>add</mat-icon>
+                  Agregar Código de Plataforma
+              </button>
+            </div>
+
+            }
         </div>
     </form>
 </mat-card>
@@ -37,22 +107,22 @@
             </mat-form-field>
         </div>
     </div>
-    
+
     <!-- Botones para marcar todos los valores de la fecha actual -->
     @if (dataSource.data.length > 0 && existeFechaActual()) {
     <div class="row mb-3">
         <div class="col-12">
             <div class="bulk-action-buttons d-flex align-items-center gap-2 flex-wrap">
                 <span class="fw-bold">Marcar todos para la fecha actual @if(getCurrentDateColumn()) {({{ getCurrentDateColumn() | date:'dd/MM/yyyy' }})}:</span>
-                <button mat-stroked-button color="primary" (click)="marcarTodosParaFechaActual('P')" 
+                <button mat-stroked-button color="primary" (click)="marcarTodosParaFechaActual('P')"
                         [disabled]="turno?.registroCerrado">
                     <mat-icon>check_circle</mat-icon> Todos Presentes
                 </button>
-                <button mat-stroked-button color="accent" (click)="marcarTodosParaFechaActual('T')" 
+                <button mat-stroked-button color="accent" (click)="marcarTodosParaFechaActual('T')"
                         [disabled]="turno?.registroCerrado">
                     <mat-icon>schedule</mat-icon> Todos Tardanza
                 </button>
-                <button mat-stroked-button color="warn" (click)="marcarTodosParaFechaActual('A')" 
+                <button mat-stroked-button color="warn" (click)="marcarTodosParaFechaActual('A')"
                         [disabled]="turno?.registroCerrado">
                     <mat-icon>cancel</mat-icon> Todos Falta
                 </button>
@@ -89,31 +159,31 @@
                       <td mat-cell *matCellDef="let row" [class.alumno-col]="column === 'alumno'" class="mobile-cell">
                             @if (column === 'alumno') {
                                 <div class="d-flex align-items-center alumno-info">
-                                   
+
                                         <span class="alumno-link" (click)="verDetalleAlumno(row.idAlumno)" [title]="'Ver detalle de ' + (row.alumno || 'alumno')">
                 {{ row.alumno || 'Sin datos' }}
               </span>
-                                
+
                                     @if (row.tieneRecuperaciones) {
                                         @for (recuperacion of row.recuperaciones; track $index) {
                                             @if (recuperacion.estado === 'P') {
                                               @if (recuperacion.estado === 'P') {
-                                                <mat-icon 
-                                                    class="ms-1 recuperacion-icon" 
+                                                <mat-icon
+                                                    class="ms-1 recuperacion-icon"
                                                     [matTooltip]="'Recuperación: ' + (recuperacion.fechaRecuperacion | date:'dd-MM-yyyy') + ' - Presente'"
                                                     style="font-size: 16px; color: #198754;">
                                                     check_circle
                                                 </mat-icon>
                                             } @else if (recuperacion.estado === 'T') {
-                                                <mat-icon 
-                                                    class="ms-1 recuperacion-icon" 
+                                                <mat-icon
+                                                    class="ms-1 recuperacion-icon"
                                                     [matTooltip]="'Recuperación: ' + (recuperacion.fechaRecuperacion | date:'dd-MM-yyyy') + ' - Tardanza'"
                                                     style="font-size: 16px; color: #ffc107;">
                                                     schedule
                                                 </mat-icon>
                                             } @else if (recuperacion.estado === 'A') {
-                                                <mat-icon 
-                                                    class="ms-1 recuperacion-icon" 
+                                                <mat-icon
+                                                    class="ms-1 recuperacion-icon"
                                                     [matTooltip]="'Recuperación: ' + (recuperacion.fechaRecuperacion | date:'dd-MM-yyyy') + ' - Falta'"
                                                     style="font-size: 16px; color: #dc3545;">
                                                     cancel
@@ -125,21 +195,44 @@
                                 </div>
                             } @else if (column !== 'idAlumno') {
                             @if (isEditableDate(column)) {
-                                                    <select class="form-select form-select-sm mobile-select d-flex justify-content-center"
-                                style="width: 60px; min-width: 60px;" name="column" [(ngModel)]="row[column]" [disabled]="turno?.registroCerrado">
-                                <option value="P">✅</option>
-                                <option value="T">⏰</option>
-                                <option value="A">❌</option>
-                            </select>
-                            } @else if (row[column] === 'P') {
+                                <div class="d-flex align-items-center gap-1" style="min-width: 120px;">
+                                    <select class="form-select form-select-sm mobile-select"
+                                        style="width: 70px; min-width: 80px;"
+                                        name="column"
+                                        [(ngModel)]="row[column + '_estado']"
+                                        [disabled]="turno?.registroCerrado"
+                                        (change)="onAsistenciaChange(row.idAlumno, column)">
+                                        <option value="P">✅</option>
+                                        <option value="T">⏰</option>
+                                        <option value="A">❌</option>
+                                    </select>
+                                    @if (deberMostrarInputMinutos(row, column)) {
+                                        <input type="number"
+                                               class="form-control form-control-sm"
+                                               style="width: auto;"
+                                               min="0"
+                                               max="999"
+                                               placeholder="5"
+                                               matTooltip="La tardanza está expresada en minutos"
+                                               [(ngModel)]="row[column + '_minutos']"
+                                               (input)="onMinutosTardanzaChange(row.idAlumno, column)"
+                                               [disabled]="turno?.registroCerrado">
+                                    }
+                                </div>
+                            } @else if (getDisplayEstado(row[column]) === 'P') {
                             <button mat-icon-button matTooltip="Presente" class="mobile-icon-btn">
                                 <mat-icon  class="mobile-icon text-success">check_circle</mat-icon>
                             </button>
-                            } @else if (row[column] === 'T') {
-                            <button mat-icon-button matTooltip="Tardanza" class="mobile-icon-btn">
-                                <mat-icon class="mobile-icon text-warning">schedule</mat-icon>
-                            </button>
-                            } @else if (row[column] === 'A') {
+                            } @else if (getDisplayEstado(row[column]) === 'T') {
+                            <div class="d-flex align-items-center gap-1">
+                                <button mat-icon-button matTooltip="Tardanza" class="mobile-icon-btn">
+                                    <mat-icon class="mobile-icon text-warning">schedule</mat-icon>
+                                </button>
+                                @if (getMinutosTardanza(row[column])) {
+                                    <small class="text-muted">{{ getMinutosTardanza(row[column]) }}min</small>
+                                }
+                            </div>
+                            } @else if (getDisplayEstado(row[column]) === 'A') {
                             <button mat-icon-button matTooltip="Falta" class="mobile-icon-btn">
                                 <mat-icon class="mobile-icon text-danger">cancel</mat-icon>
                             </button>
@@ -153,6 +246,8 @@
                     <tr mat-header-row *matHeaderRowDef="tableColumns" class="sticky-header-row"></tr>
                     <tr mat-row *matRowDef="let row; columns: tableColumns;" class="mobile-row"></tr>
                 </table>
+
+                <div class="legend text-muted small mt-2 p-2"><mat-icon class="me-1" style="font-size:16px; vertical-align:middle;">schedule</mat-icon> Las tardanzas están expresadas en minutos.</div>
 
                 <mat-paginator [pageSizeOptions]="[50, 100 , 200]" aria-label="Select page of users" class="mobile-paginator"></mat-paginator>
 
@@ -169,7 +264,7 @@
 
 @if (dataSourceRecuperacion.data.length > 0) {
 <mat-card class="p-3">
-        
+
         <mat-card-subtitle>Recuperación de clases</mat-card-subtitle>
     <div class="table-responsive">
         <table mat-table [dataSource]="dataSourceRecuperacion" class="mat-elevation-z8 table-mobile">
@@ -191,13 +286,30 @@
   <ng-container matColumnDef="accion">
     <th mat-header-cell *matHeaderCellDef> {{getMesDia()}} </th>
     <td mat-cell *matCellDef="let element">
-        
-               <select class="form-select form-select-sm mobile-select d-flex justify-content-center"
-                                style="width: 60px; min-width: 60px;" name="element"  [(ngModel)]="element.estado" [disabled]="turno?.registroCerrado">
-                                <option value="P">✅</option>
-                                <option value="T">⏰</option>
-                                <option value="A">❌</option>
-                            </select>    
+        <div class="d-flex align-items-center gap-1" style="min-width: 120px;">
+            <select class="form-select form-select-sm mobile-select"
+                style="width: 60px; min-width: 60px;"
+                name="element"
+                [(ngModel)]="element.fecha_estado"
+                [disabled]="turno?.registroCerrado"
+                (change)="onRecuperacionChange(element)">
+                <option value="P">✅</option>
+                <option value="T">⏰</option>
+                <option value="A">❌</option>
+            </select>
+            @if (element.fecha_estado === 'T') {
+                <input type="number"
+                       class="form-control form-control-sm"
+                       style="width: 50px; min-width: 50px;"
+                       min="0"
+                       max="999"
+                       placeholder="Min"
+                       matTooltip="La tardanza está expresada en minutos"
+                       [(ngModel)]="element.fecha_minutos"
+                       (input)="onRecuperacionMinutosChange(element)"
+                       [disabled]="turno?.registroCerrado">
+            }
+        </div>
     </td>
   </ng-container>
 
@@ -206,9 +318,7 @@
 </table>
     </div>
  <mat-card-actions class="d-flex justify-content-center" >
-            <button mat-flat-button (click)="guardarRecuperado()"><mat-icon>save</mat-icon> GUARDAR ASISTENCIA DE RECUPERADOS</button>
+            <button mat-flat-button  (click)="guardarRecuperado()"><mat-icon>save</mat-icon> GUARDAR ASISTENCIA DE RECUPERADOS</button>
         </mat-card-actions>
 </mat-card>
 }
-
-

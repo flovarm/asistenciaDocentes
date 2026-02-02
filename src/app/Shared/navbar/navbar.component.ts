@@ -1,5 +1,5 @@
 import { CommonModule, TitleCasePipe } from '@angular/common';
-import { Component, inject, output } from '@angular/core';
+import { Component, inject, OnInit, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -12,7 +12,8 @@ import { AuthService } from '../../_services/auth.service';
 import { LoadingService } from '../../_services/loading.service';
 import { Profesor } from '../../_models/profesor';
 import { ProfesorService } from '../../_services/profesor.service';
-
+import { NotificacionService } from '../../_services/notificacion.service';
+import {MatBadgeModule} from '@angular/material/badge';
 @Component({
   selector: 'app-navbar',
   imports: [
@@ -24,19 +25,32 @@ import { ProfesorService } from '../../_services/profesor.service';
     RouterModule,
     InitialsPipe,
     MatProgressBarModule,
-    CommonModule
+    CommonModule,
+    MatBadgeModule
   ],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit{
   public themeService = inject(ThemeService);
   public authService = inject(ProfesorService);
   public loading = inject(LoadingService);
+  public notificacionService = inject(NotificacionService);
   profesor: Profesor = JSON.parse(localStorage.getItem('profesor')!);
   readonly toggleSidenav = output();
+  ngOnInit(): void {
+    this.notificacionService.iniciarConexion();
+    this.listarNotificaciones();
+  }
   onToggleSidenav() {
     this.toggleSidenav.emit();
+  }
+
+  listarNotificaciones() {
+    this.notificacionService.listarNotificacionDocente(this.profesor.idProfesor).subscribe({
+        next: () => {
+        },
+    });
   }
 
    isDarkTheme(): boolean {

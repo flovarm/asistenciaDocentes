@@ -26,6 +26,12 @@ mat-toolbar {
     height: 100%;
 }
 
+.notificacion-icon {
+  @include mat.icon-overrides((
+    color: var(--mat-sys-primary),
+  ));
+}
+
 .selected-theme {
   @include mat.menu-overrides(
     (
@@ -58,6 +64,6 @@ img[width="250"] {
     width: 200px !important;
   }
   .logo {
-    width: 170px;
+    width: 150px;
   }
 }

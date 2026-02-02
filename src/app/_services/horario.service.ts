@@ -3,50 +3,88 @@ import { inject, Injectable } from "@angular/core";
 import { environment } from "../../environments/environment.development";
 import { CalendarSchedulerEventAction } from "angular-calendar-scheduler";
 import { map } from "rxjs";
+import {
+  CodigoPlataforma,
+  CodigoPlataformaDto,
+  CodigoPlataformaUpdateDto,
+} from "../_models/codigoPlataforma";
 
 @Injectable({
-    providedIn: 'root'
-})export class HorarioService{
-    http = inject(HttpClient);
-    apiUrl = environment.apiUrl + 'Horario/';
+  providedIn: "root",
+})
+export class HorarioService {
+  http = inject(HttpClient);
+  apiUrl = environment.apiUrl + "Horario/";
 
-    obtenerTurno(idProfesor: number) {
-        return this.http.get<any[]>(this.apiUrl + 'HorarioDetalle/' + idProfesor);
-    }
-    obtenerReemplazo(idProfesor: number) {
-        return this.http.get<any[]>(this.apiUrl + 'Reemplazo/' + idProfesor);
-    }
+  obtenerTurno(idProfesor: number) {
+    return this.http.get<any[]>(this.apiUrl + "HorarioDetalle/" + idProfesor);
+  }
+  obtenerReemplazo(idProfesor: number) {
+    return this.http.get<any[]>(this.apiUrl + "Reemplazo/" + idProfesor);
+  }
 
-    cerrarActa(idHorario:number) {
-        return this.http.patch(this.apiUrl + 'CerrarActa/' + idHorario, null);
-    }
+  cerrarActa(idHorario: number) {
+    return this.http.patch(this.apiUrl + "CerrarActa/" + idHorario, null);
+  }
 
-    obtenerHorarioDetalleByDocente(idHorario: number, idDocente: number) {
-        return this.http.get<any[]>(this.apiUrl + `HorarioDetalleByDocente/${idHorario}/${idDocente}`);
-    }
+  obtenerHorarioDetalleByDocente(idHorario: number, idDocente: number) {
+    return this.http.get<any[]>(
+      this.apiUrl + `HorarioDetalleByDocente/${idHorario}/${idDocente}`,
+    );
+  }
 
-    obtenerHorarioDetalleByDocenteReemplazo(idHorario: number, idDocenteReemplazo: number) {
-        return this.http.get<any[]>(this.apiUrl + `HorarioDetalleByDocenteReemplazo/${idHorario}/${idDocenteReemplazo}`);
-    }
+  obtenerHorarioDetalleByDocenteReemplazo(
+    idHorario: number,
+    idDocenteReemplazo: number,
+  ) {
+    return this.http.get<any[]>(
+      this.apiUrl +
+        `HorarioDetalleByDocenteReemplazo/${idHorario}/${idDocenteReemplazo}`,
+    );
+  }
 
-    obtenerHorario(actions: CalendarSchedulerEventAction[] ,idProfesor: number) {
-        return this.http.get<any[]>(this.apiUrl + 'ObtenerHorarioDocente/' + idProfesor).pipe(
-            map(events => events.map(event => ({
-                id: event.id,
-                start: new Date(event.start),
-                end: new Date(event.end),
-                title: event.title,
-                content: event.content,
-                color: {
-                    primary: event.color, 
-                    secondary: event.color
-                },
-                isClickable: true,
-                isDisabled: false
-            })))
-          );
-        }
+  obtenerHorario(actions: CalendarSchedulerEventAction[], idProfesor: number) {
+    return this.http
+      .get<any[]>(this.apiUrl + "ObtenerHorarioDocente/" + idProfesor)
+      .pipe(
+        map((events) =>
+          events.map((event) => ({
+            id: event.id,
+            start: new Date(event.start),
+            end: new Date(event.end),
+            title: event.title,
+            content: event.content,
+            color: {
+              primary: event.color,
+              secondary: event.color,
+            },
+            isClickable: true,
+            isDisabled: false,
+          })),
+        ),
+      );
+  }
 
- 
+  // Métodos para CodigoPlataforma
+  obtenerCodigoPlataforma(idHorario: number) {
+    return this.http.get<CodigoPlataforma>(
+      this.apiUrl + "obtenerCodigoPlataforma/" + idHorario,
+    );
+  }
+
+  guardarCodigoPlataforma(codigoPlataformaDto: CodigoPlataformaDto) {
+    return this.http.post<any>(
+      this.apiUrl + "GuardarCodigoPlataforma",
+      codigoPlataformaDto,
+    );
+  }
+
+  actualizarCodigoPlataforma(
+    codigoPlataformaUpdateDto: CodigoPlataformaUpdateDto,
+  ) {
+    return this.http.patch<any>(
+      this.apiUrl + "ActualizarCodigoPlataforma",
+      codigoPlataformaUpdateDto,
+    );
+  }
 }
-        

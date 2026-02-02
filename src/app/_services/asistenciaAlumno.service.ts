@@ -11,9 +11,9 @@ import { AsistenciaAlumno } from "../_models/asistenciaAlumno";
 
     ObtenerLista(idHorario: number , Codigo?: number) {
         if (Codigo) {
-            return this.http.get<AsistenciaAlumno[]>(this.apiUrl + "Detalle/" + idHorario + "/" + Codigo);
+            return this.http.get<AsistenciaAlumno[]>(this.apiUrl + "Detalle2/" + idHorario + "/" + Codigo);
         }
-        return this.http.get(this.apiUrl + idHorario);
+        return this.http.get(this.apiUrl + "Nuevo/" + idHorario);
     }
 
     GuardarAsistencias(asistencias: any[]) {

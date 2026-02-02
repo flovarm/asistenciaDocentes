@@ -1,34 +1,470 @@
-.iniciales{
-    color: var(--mat-sys-on-primary);
-    background-color: var(--mat-sys-primary);
-    font-size: 2.5rem;
-    width: 100px;
-    height: 100px;
-    text-align: center;
+.info-container {
+  background-color: var(--mat-sys-surface-container-low);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  border-radius: 12px;
+  box-shadow: var(--mat-elevation-4);
 }
 
-.proximos-eventos{
-    color: var(--mat-sys-container);
+.iniciales {
+  color: var(--mat-sys-on-primary);
+  background-color: var(--mat-sys-primary);
+  font-size: 2.5rem;
+  width: 100px;
+  height: 100px;
+  text-align: center;
 }
 
-.eventos-container{
-    background-color: var(--mat-sys-surface-container-low);
-    padding: 1rem;
+.proximos-eventos {
+  color: var(--mat-sys-container);
+}
+
+.eventos-container {
+  background-color: var(--mat-sys-surface-container-low);
+  padding: 1rem;
 }
 
 .fecha-cuadro {
-    background-color: var(--mat-sys-tertiary-container);
-    color: var(--mat-sys-primary);
-    padding: 10px;
-    border-radius: 8px;
-    text-align: center;
-    font-weight: 900;
-    width: 80px;
+  background-color: var(--mat-sys-tertiary-container);
+  color: var(--mat-sys-primary);
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 900;
+  width: 80px;
 }
 
 .titulo-evento {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-top: 10px;
-    color: var(--mat-sys-primary);
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-top: 10px;
+  color: var(--mat-sys-primary);
+}
+
+.archivos-container {
+  background-color: var(--mat-sys-surface-container-low);
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: 12px;
+  box-shadow: var(--mat-elevation-4);
+}
+
+/* Estilos del carrusel de archivos académicos */
+.carrusel-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  gap: 15px;
+  background: var(--mat-sys-surface-container-low);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.nav-btn {
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: var(--mat-elevation-2);
+}
+
+.nav-btn:hover:not(:disabled) {
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  transform: scale(1.1);
+  box-shadow: var(--mat-elevation-4);
+}
+
+.nav-btn:disabled {
+  background: var(--mat-sys-surface-variant);
+  color: var(--mat-sys-on-surface-variant);
+  cursor: not-allowed;
+  transform: none;
+  opacity: 0.38;
+}
+
+.carrusel-content {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+  min-height: 180px;
+}
+
+.archivo-card {
+  background: var(--mat-sys-surface);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: var(--mat-elevation-1);
+  transition: all 0.3s ease;
+  border: 1px solid var(--mat-sys-outline-variant);
+  display: flex;
+  flex-direction: column;
+}
+
+.archivo-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--mat-elevation-8);
+  border-color: var(--mat-sys-primary);
+  background: var(--mat-sys-surface-container-highest);
+}
+
+.archivo-info {
+  flex: 1;
+  margin-bottom: 12px;
+}
+
+.archivo-nombre {
+  color: var(--mat-sys-primary);
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.archivo-descripcion {
+  color: var(--mat-sys-on-surface-variant);
+  margin: 0 0 8px 0;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.archivo-fecha {
+  color: var(--mat-sys-outline);
+  font-size: 0.75rem;
+}
+
+.archivo-acciones {
+  display: flex;
+  justify-content: center;
+  margin-top: auto;
+}
+
+.btn-ver {
+  background: var(--mat-sys-tertiary);
+  color: var(--mat-sys-on-tertiary);
+  border: none;
+  padding: 10px 18px;
+  border-radius: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.btn-ver:hover {
+  background: var(--mat-sys-tertiary-container);
+  color: var(--mat-sys-on-tertiary-container);
+  transform: translateY(-2px);
+  box-shadow: var(--mat-elevation-4);
+}
+
+.btn-ver mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.indicadores {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.indicador {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--mat-sys-outline-variant);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.indicador.active {
+  background: var(--mat-sys-primary);
+  transform: scale(1.3);
+}
+
+.indicador:hover {
+  background: var(--mat-sys-primary-container);
+  transform: scale(1.2);
+}
+
+.no-archivos {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 1rem;
+  background: var(--mat-sys-surface-container-low);
+  border-radius: 12px;
+  border: 1px solid var(--mat-sys-outline-variant);
+}
+
+.sin-eventos {
+  color: var(--mat-sys-on-secondary-fixed);
+}
+
+/* Responsive para el carrusel */
+@media (max-width: 768px) {
+  .carrusel-wrapper {
+    padding: 12px;
+    background: var(--mat-sys-surface-container);
+  }
+
+  .carrusel-content {
+    grid-template-columns: 1fr;
+  }
+
+  .nav-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+    background: var(--mat-sys-secondary);
+    color: var(--mat-sys-on-secondary);
+  }
+
+  .nav-btn:hover:not(:disabled) {
+    background: var(--mat-sys-secondary-container);
+    color: var(--mat-sys-on-secondary-container);
+  }
+
+  .archivo-card {
+    padding: 14px;
+    min-height: 160px;
+    background: var(--mat-sys-surface-container);
+  }
+
+  .archivo-card:hover {
+    background: var(--mat-sys-surface-container-high);
+  }
+
+  .archivo-nombre {
+    font-size: 0.9rem;
+  }
+
+  .archivo-descripcion {
+    font-size: 0.8rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  .btn-ver {
+    background: var(--mat-sys-secondary);
+    color: var(--mat-sys-on-secondary);
+    padding: 8px 16px;
+  }
+
+  .btn-ver:hover {
+    background: var(--mat-sys-secondary-container);
+    color: var(--mat-sys-on-secondary-container);
+  }
+}
+
+@media (max-width: 480px) {
+  .carrusel-wrapper {
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    background: var(--mat-sys-surface-container);
+  }
+
+  .nav-btn {
+    position: static;
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    background: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
+  }
+
+  .archivo-card {
+    padding: 12px;
+    min-height: 140px;
+    background: var(--mat-sys-surface-container-low);
+    border: 1px solid var(--mat-sys-outline);
+  }
+
+  .archivo-card:hover {
+    background: var(--mat-sys-surface-container);
+    border-color: var(--mat-sys-primary);
+  }
+
+  .archivo-nombre {
+    font-size: 0.85rem;
+  }
+
+  .archivo-descripcion {
+    font-size: 0.75rem;
+  }
+
+  .btn-ver {
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    background: var(--mat-sys-tertiary);
+    color: var(--mat-sys-on-tertiary);
+  }
+
+  .btn-ver:hover {
+    background: var(--mat-sys-tertiary-container);
+    color: var(--mat-sys-on-tertiary-container);
+  }
+
+  .indicadores {
+    margin-top: 12px;
+  }
+
+  .indicador {
+    width: 8px;
+    height: 8px;
+  }
+
+  .no-archivos {
+    padding: 32px 16px;
+    background: var(--mat-sys-surface-container);
+    border: 1px solid var(--mat-sys-outline);
+  }
+}
+
+/* Estilos adicionales del carrusel con Angular Material */
+
+/* Estados de enfoque y accesibilidad */
+.carrusel-wrapper:focus-within {
+  outline: 2px solid var(--mat-sys-primary);
+  outline-offset: 2px;
+  border-radius: 16px;
+}
+
+.nav-btn:focus-visible {
+  outline: 2px solid var(--mat-sys-primary);
+  outline-offset: 2px;
+}
+
+.indicador:focus-visible {
+  outline: 2px solid var(--mat-sys-primary);
+  outline-offset: 2px;
+}
+
+/* Animaciones con curvas de Material Design */
+.archivo-card {
+  animation: mat-slide-in-bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+@keyframes mat-slide-in-bottom {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Estados pressed para botones */
+.nav-btn:active {
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  transform: scale(0.95);
+}
+
+.btn-ver:active {
+  background: var(--mat-sys-tertiary-container);
+  color: var(--mat-sys-on-tertiary-container);
+  transform: translateY(0) scale(0.98);
+}
+
+/* Efectos de superficie para cards */
+.archivo-card {
+  background: var(--mat-sys-surface-container-low);
+  border: 1px solid var(--mat-sys-outline-variant);
+  backdrop-filter: blur(8px);
+}
+
+.archivo-card:hover {
+  background: var(--mat-sys-surface-container);
+  border-color: var(--mat-sys-primary);
+  box-shadow:
+    var(--mat-elevation-8),
+    0 0 0 1px var(--mat-sys-primary-container);
+}
+
+/* Estados de loading */
+.carrusel-wrapper.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.carrusel-wrapper.loading .nav-btn {
+  background: var(--mat-sys-surface-variant);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+/* Mejoras para indicadores */
+.indicador {
+  background: var(--mat-sys-outline-variant);
+  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.indicador:hover {
+  background: var(--mat-sys-primary-container);
+  transform: scale(1.2);
+  box-shadow: var(--mat-elevation-2);
+}
+
+.indicador.active {
+  background: var(--mat-sys-primary);
+  transform: scale(1.3);
+  box-shadow:
+    var(--mat-elevation-4),
+    0 0 8px var(--mat-sys-primary-container);
+}
+
+/* Smooth transitions para cambios de color */
+* {
+  color-scheme: var(--mat-sys-color-scheme);
+}
+
+.carrusel-wrapper,
+.archivo-card,
+.nav-btn,
+.btn-ver,
+.indicador,
+.no-archivos {
+  transition:
+    background-color 0.2s cubic-bezier(0.25, 0.8, 0.25, 1),
+    color 0.2s cubic-bezier(0.25, 0.8, 0.25, 1),
+    border-color 0.2s cubic-bezier(0.25, 0.8, 0.25, 1),
+    box-shadow 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Estados de error */
+.carrusel-wrapper.error {
+  background: var(--mat-sys-error-container);
+  border: 1px solid var(--mat-sys-error);
+  color: var(--mat-sys-on-error-container);
+}
+
+.carrusel-wrapper.error .no-archivos {
+  color: var(--mat-sys-on-error-container);
+  background: transparent;
 }

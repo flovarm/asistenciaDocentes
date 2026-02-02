@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, Notification } = require("electron");
 const fs = require("fs");
 const path = require("path");
 
@@ -35,6 +35,33 @@ function createConfigWindow() {
   configWindow.setMenu(null);
 }
 
+function createNativeNotification(title, body, tag) {
+  if (Notification.isSupported()) {
+    const notification = new Notification({
+      title: title,
+      body: body,
+      tag: tag,
+      icon: path.join(__dirname, 'public/images/logoActual.png'), // Usando logo existente
+      sound: true,
+      urgency: 'normal'
+    });
+    
+    notification.show();
+    
+    notification.on('click', () => {
+      if (appWin) {
+        if (appWin.isMinimized()) appWin.restore();
+        appWin.focus();
+        // Enviar evento al renderer para mostrar la notificación específica
+        appWin.webContents.send('notification-clicked', tag);
+      }
+    });
+    
+    return notification;
+  }
+  return null;
+}
+
 function createMainWindow() {
   appWin = new BrowserWindow({
     width: 800,
@@ -43,7 +70,8 @@ function createMainWindow() {
     resizable: true,
     webPreferences: {
       contextIsolation: false,
-      nodeIntegration: true
+      nodeIntegration: true,
+      enableRemoteModule: true
     }
   });
 
@@ -69,6 +97,15 @@ ipcMain.on("save-aula", (event, aula) => {
 
 ipcMain.handle("get-aula", () => {
   return getConfig().aula;
+});
+
+// Manejadores para notificaciones nativas
+ipcMain.handle("show-notification", (event, { title, body, tag }) => {
+  return createNativeNotification(title, body, tag);
+});
+
+ipcMain.handle("is-notification-supported", () => {
+  return Notification.isSupported();
 });
 
 app.whenReady().then(() => {

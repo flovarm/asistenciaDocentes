@@ -1,0 +1,33 @@
+<h2 mat-dialog-title>
+     <mat-icon>notifications</mat-icon>
+    {{ data?.usuario | titlecase }} :</h2>
+
+<mat-dialog-content>
+  <div class="notification-details">    
+    <div class="notification-message">
+      <p><strong>Mensaje:</strong></p>
+      <p>{{ data?.descripcion || 'Sin mensaje' }}</p>
+    </div>
+    
+    @if (data?.fechaRegistro) {
+      <div class="notification-metadata">
+        <p><strong>Fecha:</strong> {{ data.fechaRegistro | date:'medium' }}</p>
+      </div>
+    }
+
+    @if (data?.aplicaTap) {
+        <div class="notification-metadata">
+            <p style="color: var(--mat-sys-secondary);">Solo aplica para docentes del programa TAP</p>
+        </div>
+    }
+    @if (data?.aplicaChildren) {
+        <div class="notification-metadata">
+            <p style="color: var(--mat-sys-secondary);">Solo aplica para docentes del programa CHILDREN</p>
+        </div>
+    }
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cerrar()">Cerrar</button>
+</mat-dialog-actions>

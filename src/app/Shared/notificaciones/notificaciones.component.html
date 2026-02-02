@@ -1,0 +1,87 @@
+<!-- <app-titulo title="Notificaciones" icon="notifications"></app-titulo> -->
+ @if (notificacionService.noLeidas() > 0){
+    <h4 class="mb-3 text-center mt-3">
+      <mat-icon>notifications</mat-icon>
+      Tienes ({{ notificacionService.noLeidas() }}) Notificaciones sin leer
+    </h4>
+ }@else{
+    <h4 class="mb-3 text-center mt-3">
+      <mat-icon>notifications</mat-icon>
+      No tienes notificaciones sin leer
+    </h4>
+ }
+<mat-card>
+  <mat-card-content>
+    <!-- Campo de búsqueda -->
+    <div class="search-container">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Buscar notificaciones</mat-label>
+        <input matInput
+               [ngModel]="searchValue()"
+               (ngModelChange)="searchValue.set($event)"
+               placeholder="Buscar notificación">
+        <mat-icon matSuffix>search</mat-icon>
+        @if (searchValue()) {
+          <button matSuffix
+                  mat-icon-button
+                  (click)="limpiarBusqueda()"
+                  matTooltip="Limpiar búsqueda">
+            <mat-icon>clear</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- Filtro de estado de lectura -->
+    <div class="filter-container">
+      <mat-radio-group [ngModel]="filtroLectura()" (ngModelChange)="filtroLectura.set($event)" class="radio-group">
+        <mat-radio-button value="todas" class="radio-button">
+          <mat-icon>list</mat-icon>
+          Todas
+        </mat-radio-button>
+        <mat-radio-button value="noLeidas" class="radio-button">
+          <mat-icon>mark_email_unread</mat-icon>
+          No leídas
+        </mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+    @if (notificacionesFiltradas().length > 0) {
+      <div class="notifications-container">
+        @for (notificacion of notificacionesFiltradas(); track notificacion) {
+          <mat-card class="notification-card" [class.unread]="esNoLeida(notificacion)">
+            <mat-card-header>
+              <div mat-card-avatar class="notification-avatar">
+                <mat-icon>{{ esNoLeida(notificacion) ? 'mark_email_unread' : 'email' }}</mat-icon>
+              </div>
+              <mat-card-title>{{ notificacion.usuario | titlecase }}</mat-card-title>
+              <mat-card-subtitle>{{ notificacion.fechaRegistro | tiempoRelativo }}</mat-card-subtitle>
+              <div class="notification-actions">
+                <button mat-icon-button
+                        (click)="verDetalle(notificacion)"
+                        matTooltip="Ver detalle"
+                        class="action-button">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              </div>
+            </mat-card-header>
+            @if (esNoLeida(notificacion)) {
+              <mat-card-actions align="end">
+                <span class="unread-badge">
+                  <mat-icon>fiber_manual_record</mat-icon>
+                  No leída
+                </span>
+              </mat-card-actions>
+            }
+          </mat-card>
+        }
+      </div>
+      <mat-paginator [pageSizeOptions]="[50,100]" aria-label="Seleccione un página"></mat-paginator>
+    } @else {
+      <div class="no-notifications">
+        <mat-icon>notifications_none</mat-icon>
+        <p>No tienes notificaciones</p>
+      </div>
+    }
+  </mat-card-content>
+</mat-card>

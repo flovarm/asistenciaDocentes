@@ -35,7 +35,8 @@ export class HomeComponent implements OnInit{
   .map(route => route.children ?? [])
   .flat()
   .filter(route => route &&  route.path)
-  .filter(route => !route.path?.includes(':'));
+  .filter(route => !route.path?.includes(':'))
+  .filter(route => !route.data?.['hideFromSidenav']);
   private readonly _mobileQuery: MediaQueryList;
   private readonly _mobileQueryListener: () => void;
   eventos: any[] = [];  
