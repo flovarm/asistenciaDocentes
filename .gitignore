@@ -43,3 +43,5 @@ Thumbs.db
 
 # Electron build output
 /release
+release.zip
+*.zip
